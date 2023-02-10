@@ -9,7 +9,7 @@ from django.db import models
 
 class Customer(models.Model):
    created_time = models.DateTimeField(editable=False)
-   contact_id = models.PositiveBigIntegerField() ## the contact ID from Zoho
+   customer_id = models.PositiveBigIntegerField() ## the contact ID from Zoho
    
    ######### Customer Type *************
    ## contact_type exists as a field in Zoho, but it only has one option, customer. Could there be future use for this?
@@ -77,7 +77,7 @@ class Customer(models.Model):
 #############################################################################################################
 
 class Item(models.Model):
-   item_id = models.PositiveBigIntegerField()  ## id field from zoho
+   product_id = models.PositiveBigIntegerField()  ## id field from zoho
    ##brand -- not very useful for my purposes, also, has like 50 options
    ##manufacturer -- same
    sku = models.CharField(unique=True)
@@ -122,18 +122,31 @@ class Item(models.Model):
 #############################################################################################################
 
 class Invoice(models.Model):
-   customer = models.ForeignKey("Customer") ### I think I do NOT want the invoice to delete (cascade) if the customer is deleted??
+   invoice_id = models.PositiveBigIntegerField() ## The unique ID for invoices in Zoho, separate from the invoice number for some reason. I don't use this, so since invoices will have their own Django assigned unique ID, maybe we don't need this?
+   customer_id = models.ForeignKey("Customer") ### I think I do NOT want the invoice to delete (cascade) if the customer is deleted??
    invoice_number = models.CharField() ##they increment automatically in Zoho, but not just a number (i.e. INV-02016). won't be the primary key for this database.
    invoice_level_tax_authority = models.CharField() ## state code choices
    invoice_date = models.DateField()
+   invoice_status = models.CharField() ##needs to have invoice_status choices
 
 #############################################################################################################
 #############################################################################################################
 
 
 
+
+#############################################################################################################
+## Model for Invoice Line Items  ############################################################################
+#############################################################################################################
 
 class Invoice_Line_Item(models.Model):
-   
-   item = models.ForeignKey("Item")
+   invoice_id = models.ForeignKey("Invoice", on_delete=models.CASCADE)
+   product_id = models.ForeignKey("Item")
+
+   quantity = models.PositiveIntegerField()
+   item_price = models.FloatField()
+   item_total = models.FloatField()
+
+   ## will this class have access to properties of Customer? since it is a foreign key of a foreign key? customer->invoice->invoice_line_item
+
 
