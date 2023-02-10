@@ -65,23 +65,51 @@ class Contact(models.Model):
    
    customer_pays_vape_tax = models.BooleanField(null=True) ## can be true or false or blank, because it doesn't apply to every state
 
-   #############################################################################################################
-   #############################################################################################################
+#############################################################################################################
+#############################################################################################################
 
 
+#############################################################################################################
+## Model for Items ##########################################################################################
+#############################################################################################################
 
+class Item(models.Model):
+   item_id = models.PositiveBigIntegerField()  ## id field from zoho
+   ##brand -- not very useful for my purposes, also, has like 50 options
+   ##manufacturer -- same
+   sku = models.CharField(unique=True)
+   purchase_price = models.FloatField()
+   preferred_vendor = models.CharField() ##another example of something with tons of choices
+   stock_on_hand = models.PositiveSmallIntegerField()
+   category_name = models.CharField() ##choices
+   e_liquid_ml = models.FloatField()
+   sub_category = models.CharField() #choices
 
+   pa_otp_tax_number_of_ounces = models.FloatField() #important for cacluating tax reports
+   pa_otp_tax_per_item = models.FloatField()
+   oh_otp_tax_per_item = models.FloatField()
+   wv_otp_tax_per_item = models.FloatField()
+   pa_vape_tax_rate = models.PositiveSmallIntegerField() ##### can be 40 or nothing... is there an easy way to define the choices in the parameters without having to create separate variables?
+   oh_vape_tax_per_ml = models.FloatField()
+   oh_vape_tax_per_item = models.FloatField()
+   wv_vape_tax_per_item = models.FloatField()
+   ky_vape_tax_per_item = models.PositiveSmallIntegerField() ###### can be 15 or nothing.
+   in_vape_tax_rate = models.PositiveSmallIntegerField() ###### can be 15% or nothing
+   il_vape_tax_per_item = models.FloatField()
+   va_vape_tax_per_item = models.FloatField()
+   nc_vape_tax_per_item = models.FloatField()
+   de_vape_tax_per_item = models.FloatField()
 
+   msrp = models.FloatField()
 
+   reporting_category_primary = models.CharField()  ##choices
+   reporting_category_secondary = models.CharField() ##choices
+   reporting_category_cannabinoid = models.CharField() ##choices
+   cloud8_b2c = models.BooleanField()
+   b2c_msrp = models.FloatField()
 
-
-
-
-
-
-
-
-
+#############################################################################################################
+#############################################################################################################
 
 
 
