@@ -1,10 +1,13 @@
 from django.db import models
 
+## Where is the best place to set global variables, like state choices?
+
+
 #############################################################################################################
-## Model for Customer ("Contact" table in Zoho) #############################################################
+## Model for Customer #######################################################################################
 #############################################################################################################
 
-class Contact(models.Model):
+class Customer(models.Model):
    created_time = models.DateTimeField(editable=False)
    contact_id = models.PositiveBigIntegerField() ## the contact ID from Zoho
    
@@ -39,7 +42,7 @@ class Contact(models.Model):
    ##tax_authority --- needs to be one of 50 states. 50 choices?
    #############################################################################
 
-   contact_name = models.CharField()
+   customer_name = models.CharField()
    ##price_list = models.CharField()   ---- This is really important, and has like 30 choices. Not sure the best way to implement. 
    ##payment_terms = models.SmallIntegerField()  --- Also really important, but not for my purposes... not sure what to include and what not to...
    shipping_address = models.CharField()
@@ -113,4 +116,24 @@ class Item(models.Model):
 
 
 
+
+#############################################################################################################
+## Model for Invoices  ######################################################################################
+#############################################################################################################
+
+class Invoice(models.Model):
+   customer = models.ForeignKey("Customer") ### I think I do NOT want the invoice to delete (cascade) if the customer is deleted??
+   invoice_number = models.CharField() ##they increment automatically in Zoho, but not just a number (i.e. INV-02016). won't be the primary key for this database.
+   invoice_level_tax_authority = models.CharField() ## state code choices
+   invoice_date = models.DateField()
+
+#############################################################################################################
+#############################################################################################################
+
+
+
+
+class Invoice_Line_Item(models.Model):
+   
+   item = models.ForeignKey("Item")
 
