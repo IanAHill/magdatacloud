@@ -12,27 +12,27 @@ class Customer(TimeStampedModel):
       ("BUSINESS", "Business"),
       ("INDIVIDUAL", "Individual"),
    ]
-   customer_sub_type = models.CharField(max_lenth=2, choices=TYPE_CHOICES, default="BUSINESS")
+   customer_sub_type = models.CharField(max_length=30, choices=TYPE_CHOICES, default="BUSINESS")
    taxable = models.BooleanField(default=True)
    tax_authority = models.CharField(max_length=2) ## needs to be all capital 2-digit state code
-   customer_name = models.CharField()
-   shipping_address = models.CharField()
-   shipping_address_line_2 = models.CharField()
-   shipping_city = models.CharField()
-   shipping_state = models.CharField()
-   shipping_code = models.PositiveSmallIntegerField(max_length=5)  ## what to do about the few that have the extra numbers on the end?
-   assigned_sales_person = models.CharField()
-   state_manager = models.CharField()
-   business_ein = models.CharField()
-   tobacco_license = models.CharField()
-   parent_chain = models.CharField()
+   customer_name = models.CharField(max_length=30)
+   shipping_address = models.CharField(max_length=30)
+   shipping_address_line_2 = models.CharField(max_length=30)
+   shipping_city = models.CharField(max_length=30)
+   shipping_state = models.CharField(max_length=30)
+   shipping_code = models.PositiveSmallIntegerField()  ## what to do about the few that have the extra numbers on the end?
+   assigned_sales_person = models.CharField(max_length=30)
+   state_manager = models.CharField(max_length=30)
+   business_ein = models.CharField(max_length=30)
+   tobacco_license = models.CharField(max_length=30)
+   parent_chain = models.CharField(max_length=30)
    CUSTOMER_TYPE_CHOICES = [
       ("CHAIN", "Chain"),
       ("CONSUMER", "Consumer"),
       ("DISTRIBUTOR", "Distributor"),
       ("INDEPENDENT_STORE", "Independent Store"),
    ]
-   customer_type = models.CharField(choices=CUSTOMER_TYPE_CHOICES, null=True, default="")
+   customer_type = models.CharField(max_length=30, choices=CUSTOMER_TYPE_CHOICES, null=True, default="")
    customer_pays_vape_tax = models.BooleanField(null=True) ## can be true or false or blank, because it doesn't apply to every state
 
 #############################################################################################################
@@ -47,18 +47,18 @@ class Customer(TimeStampedModel):
 
 class Item(TimeStampedModel):
    product_id = models.PositiveBigIntegerField()  ## id field from zoho
-   sku = models.CharField(unique=True)
-   purchase_price = models.DecimalField()
-   preferred_vendor = models.CharField() ##another example of something with tons of choices
+   sku = models.CharField(max_length=30, unique=True)
+   purchase_price = models.DecimalField(decimal_places=2, max_digits=7)
+   preferred_vendor = models.CharField(max_length=30) ##another example of something with tons of choices
    stock_on_hand = models.PositiveSmallIntegerField()
-   category_name = models.CharField() ##choices
+   category_name = models.CharField(max_length=30) ##choices
    e_liquid_ml = models.FloatField()
-   msrp = models.DecimalField()
-   reporting_category_primary = models.CharField()  ##choices
-   reporting_category_secondary = models.CharField() ##choices
-   reporting_category_cannabinoid = models.CharField() ##choices
+   msrp = models.DecimalField(decimal_places=2, max_digits=7)
+   reporting_category_primary = models.CharField(max_length=30)  ##choices
+   reporting_category_secondary = models.CharField(max_length=30) ##choices
+   reporting_category_cannabinoid = models.CharField(max_length=30) ##choices
    cloud8_b2c = models.BooleanField()
-   b2c_msrp = models.DecimalField()
+   b2c_msrp = models.DecimalField(decimal_places=2, max_digits=7)
 
 #############################################################################################################
 #############################################################################################################
@@ -73,10 +73,10 @@ class Item(TimeStampedModel):
 class Invoice(TimeStampedModel):
    invoice_id = models.PositiveBigIntegerField() ## The unique ID for invoices in Zoho, separate from the invoice number for some reason. I don't use this, so since invoices will have their own Django assigned unique ID, maybe we don't need this?
    customer = models.ForeignKey("Customer", on_delete=models.PROTECT) 
-   invoice_number = models.CharField() 
-   invoice_level_tax_authority = models.CharField() ## state code choices, could inherit from attached Customer
+   invoice_number = models.CharField(max_length=30) 
+   invoice_level_tax_authority = models.CharField(max_length=30) ## state code choices, could inherit from attached Customer
    invoice_date = models.DateField()
-   invoice_status = models.CharField() ##needs to have invoice_status choices
+   invoice_status = models.CharField(max_length=30) ##needs to have invoice_status choices
 
 #############################################################################################################
 #############################################################################################################
@@ -93,11 +93,11 @@ class Invoice(TimeStampedModel):
 
 class Invoice_Line_Item(TimeStampedModel):
    invoice_id = models.ForeignKey("Invoice", on_delete=models.CASCADE)
-   product_id = models.ForeignKey("Item")
+   product_id = models.ForeignKey("Item", on_delete=models.CASCADE)
 
    quantity = models.PositiveIntegerField()
-   item_price = models.DecimalField()
-   item_total = models.DecimalField()
+   item_price = models.DecimalField(decimal_places=2, max_digits=7)
+   item_total = models.DecimalField(decimal_places=2, max_digits=7)
 
    ## will this class have access to properties of Customer? since it is a foreign key of a foreign key? customer->invoice->invoice_line_item
 
