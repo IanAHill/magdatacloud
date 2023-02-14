@@ -96,8 +96,8 @@ class Invoice_Line_Item(TimeStampedModel):
    product_id = models.ForeignKey("Item")
 
    quantity = models.PositiveIntegerField()
-   item_price = models.FloatField()
-   item_total = models.FloatField()
+   item_price = models.DecimalField()
+   item_total = models.DecimalField()
 
    ## will this class have access to properties of Customer? since it is a foreign key of a foreign key? customer->invoice->invoice_line_item
 
