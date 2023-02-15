@@ -14,7 +14,7 @@ class Customer(TimeStampedModel):
    ]
    customer_sub_type = models.CharField(max_length=30, choices=TYPE_CHOICES, default="BUSINESS")
    taxable = models.BooleanField(default=True)
-   tax_authority = models.CharField(max_length=2) ## needs to be all capital 2-digit state code
+   
    customer_name = models.CharField(max_length=30)
    shipping_address = models.CharField(max_length=30)
    shipping_address_line_2 = models.CharField(max_length=30)
@@ -71,12 +71,13 @@ class Item(TimeStampedModel):
 #############################################################################################################
 
 class Invoice(TimeStampedModel):
-   invoice_id = models.PositiveBigIntegerField() ## The unique ID for invoices in Zoho, separate from the invoice number for some reason. I don't use this, so since invoices will have their own Django assigned unique ID, maybe we don't need this?
+   invoice = models.PositiveBigIntegerField() ## The unique ID for invoices in Zoho, separate from the invoice number for some reason. I don't use this, so since invoices will have their own Django assigned unique ID, maybe we don't need this?
    customer = models.ForeignKey("Customer", on_delete=models.PROTECT) 
    invoice_number = models.CharField(max_length=30) 
    invoice_level_tax_authority = models.CharField(max_length=30) ## state code choices, could inherit from attached Customer
    invoice_date = models.DateField()
    invoice_status = models.CharField(max_length=30) ##needs to have invoice_status choices
+   tax_authority = models.CharField(max_length=2) ## needs to be all capital 2-digit state code
 
 #############################################################################################################
 #############################################################################################################
@@ -92,12 +93,14 @@ class Invoice(TimeStampedModel):
 #############################################################################################################
 
 class Invoice_Line_Item(TimeStampedModel):
-   invoice_id = models.ForeignKey("Invoice", on_delete=models.CASCADE)
-   product_id = models.ForeignKey("Item", on_delete=models.CASCADE)
+   invoice = models.ForeignKey("Invoice", on_delete=models.CASCADE, related_name="line_items")
+   product = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="line_items")
 
    quantity = models.PositiveIntegerField()
    item_price = models.DecimalField(decimal_places=2, max_digits=7)
    item_total = models.DecimalField(decimal_places=2, max_digits=7)
+   taxes_amount = models.DecimalField(decimal_places=2, max_digits=7)
+   total_sales = models.DecimalField(decimal_places=2, max_digits=7, default=0.00) ##add to other decimal fields for testing purposes
 
    ## will this class have access to properties of Customer? since it is a foreign key of a foreign key? customer->invoice->invoice_line_item
 
@@ -112,6 +115,12 @@ class Invoice_Line_Item(TimeStampedModel):
 #############################################################################################################
 
 class Taxes(TimeStampedModel):
+   state = models.CharField()
+   tax_number_of_ounces = models.FloatField()
+   tax_per_item = models.FloatField()
+   tax_per_ml = models.FloatField()
+   
+
    pa_otp_tax_number_of_ounces = models.FloatField() 
    pa_otp_tax_per_item = models.FloatField()
    oh_otp_tax_per_item = models.FloatField()
