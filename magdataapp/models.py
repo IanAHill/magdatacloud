@@ -96,7 +96,7 @@ class Invoice(TimeStampedModel):
 
 class Invoice_Line_Item(TimeStampedModel):
    invoice = models.ForeignKey("Invoice", on_delete=models.CASCADE, related_name="line_items")
-   product = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="line_items")
+   item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="line_items")
 
    quantity = models.PositiveIntegerField()
    item_price = models.DecimalField(decimal_places=2, max_digits=7)

@@ -10,47 +10,135 @@
 
 import models
 
-def extract_taxes(invoice): ## should the paramenter be invoice, in which case it will execute tax extraction on each line item belonging to the invoice, or just take invoice_line_item as an argument?
+def extract_taxes(invoice):
     
-    ##INDIANA has an easy tax, 15% of total sale off any of the items with category "Disposable Vapes", or Cloud 8 Products with the listed sub_categories.
+    ##INDIANA############################################################
+    #####################################################################
+    
+    # IN Vape Tax == 15% of wholesale cost (purchase_price) for Closed Systems (Disposable Vapes and Cloud 8 Vapes)
     if invoice.invoice_level_tax_authority == "IN":
-        if item.category_name == "Disposable Vapes":
-            return invoice_line_item.item_total/1.15 ##should return a new item total that has the 15% tax removed. How to put the extracted tax amount into a separate field?
-        elif item.category_name == "Cloud 8":
-            if item.reporting_sub_category == "1ML Cartridge":
-                return invoice_line_item.item_total/1.15
-            elif item.reporting_sub_category == "1ML Disposable":
-                return invoice_line_item.item_total/1.15
-            elif item.reporting_sub_category == "1ML Disposables": ## this is stupid, because it should be the same as 1ML Disposable case as above, but people just enter some items wrong.
-                return invoice_line_item.item_total/1.15
-            elif item.reporting_sub_category == "2ML Disposable":
-                return invoice_line_item.item_total/1.15
-            elif item.reporting_sub_category == "2ML Pro Disposable":
-                return invoice_line_item.item_total/1.15
+        for line in invoice.line_items.all():
+            if line.item.category_name == "Disposable Vapes":
+                return line.item_total - line.item.purchase_price*line.quantity*.15
+            elif line.category_name == "Cloud 8":
+                if line.item.reporting_sub_category == "1ML Cartridge":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "1ML Disposable":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "1ML Disposables":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "2ML Disposables":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "2ML Pro Disposables":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                else:
+                    return line.item_total
             else:
-                return invoice_line_item.item_total ##all other cloud 8 products are not subject to this tax
-        else:
-            return invoice_line_item.item_total/1.15
-        
+                return line.item_total
 
-    ## KY Vape Tax is $1.50 for every single retail unit sold for disposable vapes (closed system) and certain cloud 8 products, and 15% for Vape Juice (open system) items
+
+    ##KENTUCKY############################################################
+    ######################################################################
+
+    ## KY Vape Tax is $1.50 for each retail unit sold for disposable vapes (closed system) and Cloud 8 Vapes, and 15% of selling price (item_price) for Vape Juice (open system) items
     elif invoice.invoice_level_tax_authority == "KY":
-        if item.category_name == "Disposable Vapes":
-            return invoice_line_item.item_total*1.50*item.retail_until_in_wholesale
-        elif item.category_name == "Vape Juice":
-            return invoice_line_item.item_total/1.15
-        elif item.category_name == "Cloud 8":
-            if item.reporting_sub_category == "1ML Cartridge":
-                return invoice_line_item.item_total*1.50*item.retail_until_in_wholesale
-            elif item.reporting_sub_category == "1ML Disposable":
-                return invoice_line_item.item_total*1.50*item.retail_until_in_wholesale
-            elif item.reporting_sub_category == "1ML Disposables": ## this is stupid, because it should be the same as 1ML Disposable case as above, but people just enter some items wrong.
-                return invoice_line_item.item_total*1.50*item.retail_until_in_wholesale
-            elif item.reporting_sub_category == "2ML Disposable":
-                return invoice_line_item.item_total*1.50*item.retail_until_in_wholesale
-            elif item.reporting_sub_category == "2ML Pro Disposable":
-                return invoice_line_item.item_total*1.50*item.retail_until_in_wholesale
+        for line in invoice.line_items.all():
+            if line.item.category_name == "Disposable Vapes":
+                return line.item_total*1.50*line.item.retail_unit_in_wholesale
+            elif line.item.category_name == "Vape Juice":
+                return line.item_total/1.15
+            elif line.item.category_name == "Cloud 8":
+                if line.item.reporting_sub_category == "1ML Cartridge":
+                    return line.item_total*1.50*line.item.retail_unit_in_wholesale
+                elif line.item.reporting_sub_category == "1ML Disposable":
+                    return line.item_total*1.50*line.item.retail_unit_in_wholesale
+                elif line.item.reporting_sub_category == "1ML Disposables":
+                    return line.item_total*1.50*line.item.retail_unit_in_wholesale
+                elif line.item.reporting_sub_category == "2ML Disposable":
+                    return line.item_total*1.50*line.item.retail_unit_in_wholesale
+                elif line.item.reporting_sub_category == "2ML Pro Disposable":
+                    return line.item_total*1.50*line.item.retail_unit_in_wholesale
+                else:
+                    return line.item_total
             else:
-                return invoice_line_item.item_total
-        else:
-            return invoice_line_item.item_total
+                return line.item_total
+            
+    ##OHIO################################################################
+    ######################################################################
+
+    # OH vape tax == $.10 per ml
+    elif invoice.invoice_level_tax_authority == "OH":
+        for line in invoice.line_items.all():
+            if line.item.category_name == "Disposable Vapes":
+                return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+            elif line.item.category_name == "Vape Juice":
+                return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+            elif line.item.category_name == "Cloud 8":
+                if line.item.reporting_sub_category == "1ML Cartridge":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+                elif line.item.reporting_sub_category == "1ML Disposable":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+                elif line.item.reporting_sub_category == "1ML Disposables":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+                elif line.item.reporting_sub_category == "2ML Disposable":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+                elif line.item.reporting_sub_category == "2ML Pro Disposable":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.10
+                else:
+                    return line.item_total
+            else:
+                return line.item_total
+
+
+    ##WEST VIRGINIA#######################################################
+    ######################################################################
+
+    # WV Vape Tax == $0.075 per ml
+    elif invoice.invoice_level_tax_authority == "WV":
+        for line in invoice.line_items.all():
+            if line.item.category_name == "Disposable Vapes":
+                return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+            elif line.item.category_name == "Vape Juice":
+                return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+            elif line.item.category_name == "Cloud 8":
+                if line.item.reporting_sub_category == "1ML Cartridge":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+                elif line.item.reporting_sub_category == "1ML Disposable":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+                elif line.item.reporting_sub_category == "1ML Disposables":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+                elif line.item.reporting_sub_category == "2ML Disposable":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+                elif line.item.reporting_sub_category == "2ML Pro Disposable":
+                    return line.item_total - line.item.e_liquid_ml*line.quantity*.075
+                else:
+                    return line.item_total
+            else:
+                return line.item_total
+
+
+    ##ILLINOIS############################################################
+    ######################################################################
+
+    #IL Vape Tax == 15% wholesale cost for open and closed systems
+    elif invoice.invoice_level_tax_authority == "IL":
+        for line in invoice.line_items.all():
+            if line.item.category_name == "Disposable Vapes":
+                return line.item_total - line.item.purchase_price*line.quantity*.15
+            elif line.item.category_name == "Vape Juice":
+                return line.item_total - line.item.purchase_price*line.quantity*.15
+            elif line.category_name == "Cloud 8":
+                if line.item.reporting_sub_category == "1ML Cartridge":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "1ML Disposable":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "1ML Disposables":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "2ML Disposables":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                elif line.item.reporting_sub_category == "2ML Pro Disposables":
+                    return line.item_total - line.item.purchase_price*line.quantity*.15
+                else:
+                    return line.item_total
+            else:
+                return line.item_total
