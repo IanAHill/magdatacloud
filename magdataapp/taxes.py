@@ -11,6 +11,36 @@
 import models
 
 
+def extract_indiana_taxes(invoice):
+    for line in invoice.line_items.select_related(
+        "item"
+    ).all():  # select_related tells the ORM to join against the Item
+        category = line.item.category_name
+        total = line.item_total
+        price = line.item.purchase_price
+
+        if line.item.otp_tax:
+            # handle this here
+
+        if category == "Disposable Vapes":
+            line.item.total_sales = total / 1.15
+            line.item.taxes_amount = total - (total / 1.15)
+        elif category == "Cloud 8":
+            matching_categories = [
+                "1ML Cartridge",
+                "1ML Disposable",
+                "1ML Disposables",
+                "2ML Disposables",
+                "2ML Pro Dispostables",
+            ]
+
+            if line.item.reporting_sub_category in matching_categories:
+                line.item.total_sales = total / 1.15
+                line.item.taxes_amount = total - (total / 1.15)
+
+        line.item.save()
+
+
 def extract_taxes(invoice):
 
     ##INDIANA############################################################
@@ -18,30 +48,9 @@ def extract_taxes(invoice):
 
     # IN Vape Tax == 15% of wholesale cost (purchase_price) for Closed Systems (Disposable Vapes and Cloud 8 Vapes)
     if invoice.invoice_level_tax_authority == "IN":
-        for line in invoice.line_items.select_related(
-            "item"
-        ).all():  # select_related tells the ORM to join against the Item
-            category = line.item.category_name
-            total = line.item_total
-            price = line.item.purchase_price
-            qty = line.quantity
-            tax = 0.15
+        extract_indiana_taxes(invoice)
 
-            if category == "Disposable Vapes":
-                return total - price * qty * tax
-            elif category == "Cloud 8":
-                matching_categories = [
-                    "1ML Cartridge",
-                    "1ML Disposable",
-                    "1ML Disposables",
-                    "2ML Disposables",
-                    "2ML Pro Dispostables",
-                ]
-
-                if line.item.reporting_sub_category in matching_categories:
-                    return total - price * qty * tax
-
-            return total
+    ##INDIANA############################################################
 
     ##KENTUCKY############################################################
     ######################################################################
@@ -75,6 +84,7 @@ def extract_taxes(invoice):
     # OH vape tax == $.10 per ml
     elif invoice.invoice_level_tax_authority == "OH":
         for line in invoice.line_items.all():
+
             if line.item.category_name == "Disposable Vapes":
                 return line.item_total - line.item.e_liquid_ml * line.quantity * 0.10
             elif line.item.category_name == "Vape Juice":
@@ -181,3 +191,8 @@ def extract_taxes(invoice):
                     return line.item_total
             else:
                 return line.item_total
+
+
+    line.item.total_sales = line.item_total
+    line.item.taxes_amount = 0.00
+    line.item.save()
