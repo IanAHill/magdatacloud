@@ -54,11 +54,13 @@ class Item(TimeStampedModel):
    category_name = models.CharField(max_length=30) ##choices
    e_liquid_ml = models.FloatField()
    msrp = models.DecimalField(decimal_places=2, max_digits=7)
+   reporting_sub_category = models.CharField(max_length=30)
    reporting_category_primary = models.CharField(max_length=30)  ##choices
    reporting_category_secondary = models.CharField(max_length=30) ##choices
    reporting_category_cannabinoid = models.CharField(max_length=30) ##choices
    cloud8_b2c = models.BooleanField()
    b2c_msrp = models.DecimalField(decimal_places=2, max_digits=7)
+   retail_units_in_wholesale = models.PositiveSmallIntegerField()
 
 #############################################################################################################
 #############################################################################################################
@@ -94,7 +96,7 @@ class Invoice(TimeStampedModel):
 
 class Invoice_Line_Item(TimeStampedModel):
    invoice = models.ForeignKey("Invoice", on_delete=models.CASCADE, related_name="line_items")
-   product = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="line_items")
+   item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="line_items")
 
    quantity = models.PositiveIntegerField()
    item_price = models.DecimalField(decimal_places=2, max_digits=7)
