@@ -11,13 +11,13 @@
 import models
 
 def extract_taxes(invoice):
-    
+
     ##INDIANA############################################################
     #####################################################################
-    
+
     # IN Vape Tax == 15% of wholesale cost (purchase_price) for Closed Systems (Disposable Vapes and Cloud 8 Vapes)
     if invoice.invoice_level_tax_authority == "IN":
-        for line in invoice.line_items.all():
+        for line in invoice.line_items.select_related("item").all():  # select_related tells the ORM to join against the Item
             if line.item.category_name == "Disposable Vapes":
                 return line.item_total - line.item.purchase_price*line.quantity*.15
             elif line.category_name == "Cloud 8":
@@ -42,7 +42,7 @@ def extract_taxes(invoice):
 
     ## KY Vape Tax is $1.50 for each retail unit sold for disposable vapes (closed system) and Cloud 8 Vapes, and 15% of selling price (item_price) for Vape Juice (open system) items
     elif invoice.invoice_level_tax_authority == "KY":
-        for line in invoice.line_items.all():
+        for line in invoice.line_items.select_related("item").all():
             if line.item.category_name == "Disposable Vapes":
                 return line.item_total*1.50*line.item.retail_unit_in_wholesale
             elif line.item.category_name == "Vape Juice":
@@ -62,7 +62,7 @@ def extract_taxes(invoice):
                     return line.item_total
             else:
                 return line.item_total
-            
+
     ##OHIO################################################################
     ######################################################################
 
