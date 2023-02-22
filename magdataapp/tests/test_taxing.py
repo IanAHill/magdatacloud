@@ -2,6 +2,7 @@ import pytest
 
 from magdataapp.models import *
 from datetime import datetime
+from magdataapp import taxes
 
 def test_pytest():
     # Just to make sure pytest is up and working
@@ -155,28 +156,86 @@ def test_in_taxes(db):
         WV_otp_tax = 0,
         )
 
-
-    i = Invoice.objects.create(
+    inv1 = Invoice.objects.create(
         invoice = 545456145,
-        customer = 
+        customer = c1,
+        invoice_number = "INV-04738",
+        invoice_level_tax_authority = "PA",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
+    )
+    inv2 = Invoice.objects.create(
+        invoice = 533456145,
+        customer = c2,
+        invoice_number = "INV-04739",
+        invoice_level_tax_authority = "WV",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
+    )
+    inv3 = Invoice.objects.create(
+        invoice = 532226145,
+        customer = c2,
+        invoice_number = "INV-44739",
+        invoice_level_tax_authority = "IN",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
+    )
+    inv4 = Invoice.objects.create(
+        invoice = 532226145,
+        customer = c2,
+        invoice_number = "INV-44739",
+        invoice_level_tax_authority = "KY",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
+    )
+    inv5 = Invoice.objects.create(
+        invoice = 532226145,
+        customer = c2,
+        invoice_number = "INV-12569",
+        invoice_level_tax_authority = "OH",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
     )
 
 
-    l1 = LineItem.objects.create(....)
-    l2 = LineItem.objects.create(....)
-    l3 = LineItem.objects.create(....)
-    l4 = LineItem.objects.create(....)
+    l1 = Invoice_Line_Item.objects.create(
+        invoice = inv1,
+        item = i1,
+        quantity = 3,
+        item_price = 9.75,
+        item_total = 9.75 * 3,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l2 = Invoice_Line_Item.objects.create(
+        invoice = inv1,
+        item = i2,
+        quantity = 2,
+        item_price = 14.00,
+        item_total = 28,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l3 = Invoice_Line_Item.objects.create(
+        invoice = inv2,
+        item = i3,
+        quantity = 2,
+        item_price = 140.00,
+        item_total = 280.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    
+    taxes.extract_taxes(inv1)
+    taxes.extract_taxes(inv2)
 
-    extract_taxes(i)
-
-    i.refresh_from_db()
+    inv1.refresh_from_db()
+    inv2.refresh_from_db()
     l1.refresh_from_db()
     l2.refresh_from_db()
     l3.refresh_from_db()
-    l4.refresh_from_db()
 
-    assert i.total_tax == 0.00
+    assert l1.total_sales == 0.00
     assert l1.taxes_amount == 0.00
     assert l2.taxes_amount == 0.00
     assert l3.taxes_amount == 0.00
-    assert l4.taxes_amount == 0.00

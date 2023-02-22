@@ -5,7 +5,6 @@ from django_extensions.db.models import TimeStampedModel
 ## Model for Customer #######################################################################################
 #############################################################################################################
 
-
 class Customer(TimeStampedModel):
     created_time = models.DateTimeField(editable=False)
     customer = models.PositiveBigIntegerField()  ## the contact ID from Zoho
@@ -17,15 +16,12 @@ class Customer(TimeStampedModel):
         max_length=30, choices=TYPE_CHOICES, default="BUSINESS"
     )
     taxable = models.BooleanField(default=True)
-
     customer_name = models.CharField(max_length=30)
     shipping_address = models.CharField(max_length=30)
-    shipping_address_line_2 = models.CharField(max_length=30 null=true)
+    shipping_address_line_2 = models.CharField(max_length=30, null=True)
     shipping_city = models.CharField(max_length=30)
     shipping_state = models.CharField(max_length=30)
-    shipping_code = (
-        models.PositiveSmallIntegerField()
-    )  ## what to do about the few that have the extra numbers on the end?
+    shipping_code = models.PositiveSmallIntegerField()
     assigned_sales_person = models.CharField(max_length=30)
     state_manager = models.CharField(max_length=30)
     business_ein = models.CharField(max_length=30)
@@ -40,19 +36,12 @@ class Customer(TimeStampedModel):
     customer_type = models.CharField(
         max_length=30, choices=CUSTOMER_TYPE_CHOICES, null=True, default=""
     )
-    customer_pays_vape_tax = models.BooleanField(
-        null=True
-    )  ## can be true or false or blank, because it doesn't apply to every state
-
-
-#############################################################################################################
-#############################################################################################################
+    customer_pays_vape_tax = models.BooleanField(null=True)
 
 
 #############################################################################################################
 ## Model for Items ##########################################################################################
 #############################################################################################################
-
 
 class Item(TimeStampedModel):
     product = models.PositiveBigIntegerField()  ## id field from zoho
@@ -83,14 +72,10 @@ class Item(TimeStampedModel):
     )
 
 
-#############################################################################################################
-#############################################################################################################
-
 
 #############################################################################################################
 ## Model for Invoices  ######################################################################################
 #############################################################################################################
-
 
 class Invoice(TimeStampedModel):
     invoice = models.PositiveBigIntegerField()
@@ -99,15 +84,11 @@ class Invoice(TimeStampedModel):
     invoice_level_tax_authority = models.CharField(max_length=30)  
     invoice_date = models.DateField()
     invoice_status = models.CharField(max_length=30)  
-    tax_authority = models.CharField(max_length=2)  
-
-
 
 
 #############################################################################################################
 ## Model for Invoice Line Items  ############################################################################
 #############################################################################################################
-
 
 class Invoice_Line_Item(TimeStampedModel):
     invoice = models.ForeignKey(
