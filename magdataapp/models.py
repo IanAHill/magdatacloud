@@ -72,7 +72,9 @@ class Item(TimeStampedModel):
     cloud8_b2c = models.BooleanField()
     b2c_msrp = models.DecimalField(decimal_places=2, max_digits=7)
     retail_units_in_wholesale = models.PositiveSmallIntegerField()
-    otp_tax = models.DecimalField(decimal_places=2, max_digits=7, blank=True, null=True)
+    OH_otp_tax = models.DecimalField(decimal_places=2, max_digits=7, blank=True, null=True)
+    PA_otp_tax = models.DecimalField(decimal_places=2, max_digits=7, blank=True, null=True)
+    WV_otp_tax = models.DecimalField(decimal_places=2, max_digits=7, blank=True, null=True)
 
 
 #############################################################################################################
