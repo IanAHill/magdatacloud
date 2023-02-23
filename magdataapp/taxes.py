@@ -123,6 +123,33 @@ def extract_WV_taxes(invoice):
 
 
 
+def extract_NJ_taxes(invoice):
+    for line in invoice.line_items.select_related("item").all():
+        category = line.item.category_name
+        total = line.item_total
+        qty = line.quantity
+        mls = line.item.e_liquid_ml
+
+        #NJ Vape Tax == $0.10 per ml for closed
+        if category == "Disposable Vapes":
+            line.item.total_sales = total - (mls * qty * 0.10)
+            line.item.taxes_amount = mls * qty * 0.10
+        elif category == "Cloud 8":
+            matching_categories = [
+                "1ML Cartridge",
+                "1ML Disposable",
+                "1ML Disposables",
+                "2ML Disposables",
+                "2ML Pro Dispostables",
+            ]
+            if line.item.reporting_sub_category in matching_categories:
+                line.item.total_sales = total - (mls * qty * 0.10)
+                line.item.taxes_amount = mls * qty * 0.10
+        
+        line.item.save()
+
+
+
 def extract_IL_taxes(invoice):
     for line in invoice.line_items.select_related("item").all():
         price = line.item.purchase_price
@@ -156,7 +183,7 @@ def extract_PA_taxes(invoice):
     for line in invoice.line_items.select_related("item").all():
         total = line.item_total
         qty = line.quantity    
-        if line.item.WV_otp_tax and not invoice.customer.customer_pays_vape_tax:
+        if line.item.PA_otp_tax:
             line.item.total_sales = total - line.item.PA_otp_tax * qty
             line.item.taxes_amount = line.item.PA_otp_tax * qty
 
@@ -174,7 +201,9 @@ def extract_taxes(invoice):
         extract_KY_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "IL":
         extract_KY_taxes(invoice)
-    elif invoice.invoice_level_tax_authority == "PA":
+    elif invoice.invoice_level_tax_authority == "NJ":
+        extract_KY_taxes(invoice)
+    elif invoice.invoice_level_tax_authority == "PA" and not invoice.customer.customer_pays_own_vape_tax:
         extract_PA_taxes(invoice)
     else:
         for line in invoice.line_items.select_related("item").all():
