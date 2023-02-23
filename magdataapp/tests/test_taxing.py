@@ -221,6 +221,14 @@ def test_in_taxes(db):
         invoice_date = datetime.today,
         invoice_status = "Closed",
     )
+    inv7 = Invoice.objects.create(
+        invoice = 5322244145,
+        customer = c2,
+        invoice_number = "INV-02569",
+        invoice_level_tax_authority = "IL",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
+    )
 
 #Invoice 1 Line Items
     l1 = Invoice_Line_Item.objects.create(
@@ -498,6 +506,52 @@ def test_in_taxes(db):
         taxes_amount = 0,
         total_sales = 0
     )
+#Invoice 7 Line Items
+    l31 = Invoice_Line_Item.objects.create(
+        invoice = inv7,
+        item = i1,
+        quantity = 3,
+        item_price = 60.00,
+        item_total = 60.00 * 3,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l32 = Invoice_Line_Item.objects.create(
+        invoice = inv7,
+        item = i2,
+        quantity = 2,
+        item_price = 9.00,
+        item_total = 18,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l33 = Invoice_Line_Item.objects.create(
+        invoice = inv7,
+        item = i3,
+        quantity = 2,
+        item_price = 107.50,
+        item_total = 215.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l34 = Invoice_Line_Item.objects.create(
+        invoice = inv7,
+        item = i4,
+        quantity = 1,
+        item_price = 10.00,
+        item_total = 10.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l35 = Invoice_Line_Item.objects.create(
+        invoice = inv7,
+        item = i5,
+        quantity = 1,
+        item_price = 5.00,
+        item_total = 5.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
 
 
     
@@ -507,6 +561,7 @@ def test_in_taxes(db):
     taxes.extract_taxes(inv4)
     taxes.extract_taxes(inv5)
     taxes.extract_taxes(inv6)
+    taxes.extract_taxes(inv7)
 
     inv1.refresh_from_db()
     inv2.refresh_from_db()
@@ -514,6 +569,7 @@ def test_in_taxes(db):
     inv4.refresh_from_db()
     inv5.refresh_from_db()
     inv6.refresh_from_db()
+    inv7.refresh_from_db()
     l1.refresh_from_db()
     l2.refresh_from_db()
     l3.refresh_from_db()
@@ -544,6 +600,11 @@ def test_in_taxes(db):
     l28.refresh_from_db()
     l29.refresh_from_db()
     l30.refresh_from_db()
+    l31.refresh_from_db()
+    l32.refresh_from_db()
+    l33.refresh_from_db()
+    l34.refresh_from_db()
+    l35.refresh_from_db()
 
     assert l1.total_sales == 0.00
     assert l1.taxes_amount == 0.00

@@ -151,6 +151,18 @@ def extract_IL_taxes(invoice):
         line.item.save()
 
 
+
+def extract_PA_taxes(invoice):
+    for line in invoice.line_items.select_related("item").all():
+        total = line.item_total
+        qty = line.quantity    
+        if line.item.WV_otp_tax and not invoice.customer.customer_pays_vape_tax:
+            line.item.total_sales = total - line.item.PA_otp_tax * qty
+            line.item.taxes_amount = line.item.PA_otp_tax * qty
+
+        line.item.save()
+
+
 def extract_taxes(invoice):
     if invoice.invoice_level_tax_authority == "IN":
         extract_IN_taxes(invoice)
@@ -162,6 +174,8 @@ def extract_taxes(invoice):
         extract_KY_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "IL":
         extract_KY_taxes(invoice)
+    elif invoice.invoice_level_tax_authority == "PA":
+        extract_PA_taxes(invoice)
     else:
         for line in invoice.line_items.select_related("item").all():
             line.item.total_sales = line.item_total
