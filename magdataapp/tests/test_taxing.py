@@ -50,7 +50,6 @@ def test_in_taxes(db):
         customer_type = "CHAIN",
         customer_pays_vape_tax = True,
         )
-    
     c2 = Customer.objects.create(
         created_time = datetime.now(),
         customer = 123456789,
@@ -111,7 +110,6 @@ def test_in_taxes(db):
         PA_otp_tax = 5.17,
         WV_otp_tax = 1.15,
         )
-    
     i3 = Item.objects.create(
         product = 123456789,
         sku = "ELF55",
@@ -133,7 +131,6 @@ def test_in_taxes(db):
         PA_otp_tax = 0,
         WV_otp_tax = 0,
         )
-    
     i4 = Item.objects.create(
         product = 123456789,
         sku = "BAD558",
