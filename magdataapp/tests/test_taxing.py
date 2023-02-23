@@ -48,7 +48,7 @@ def test_in_taxes(db):
         tobacco_license = "15551 015",
         parent_chain = "CStore Master",
         customer_type = "CHAIN",
-        customer_pays_vape_tax = True,
+        customer_pays_vape_tax = False,
         )
     c2 = Customer.objects.create(
         created_time = datetime.now(),
@@ -191,7 +191,7 @@ def test_in_taxes(db):
     )
     inv3 = Invoice.objects.create(
         invoice = 532226145,
-        customer = c2,
+        customer = c1,
         invoice_number = "INV-44739",
         invoice_level_tax_authority = "IN",
         invoice_date = datetime.today,
@@ -207,7 +207,7 @@ def test_in_taxes(db):
     )
     inv5 = Invoice.objects.create(
         invoice = 532226145,
-        customer = c2,
+        customer = c1,
         invoice_number = "INV-12569",
         invoice_level_tax_authority = "OH",
         invoice_date = datetime.today,
@@ -223,9 +223,17 @@ def test_in_taxes(db):
     )
     inv7 = Invoice.objects.create(
         invoice = 5322244145,
-        customer = c2,
+        customer = c1,
         invoice_number = "INV-02569",
         invoice_level_tax_authority = "IL",
+        invoice_date = datetime.today,
+        invoice_status = "Closed",
+    )
+    inv8 = Invoice.objects.create(
+        invoice = 5322244145,
+        customer = c2,
+        invoice_number = "INV-02569",
+        invoice_level_tax_authority = "FL",
         invoice_date = datetime.today,
         invoice_status = "Closed",
     )
@@ -552,6 +560,52 @@ def test_in_taxes(db):
         taxes_amount = 0,
         total_sales = 0
     )
+#Invoice 8 Line Items
+    l36 = Invoice_Line_Item.objects.create(
+        invoice = inv8,
+        item = i1,
+        quantity = 3,
+        item_price = 60.00,
+        item_total = 60.00 * 3,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l37 = Invoice_Line_Item.objects.create(
+        invoice = inv8,
+        item = i2,
+        quantity = 2,
+        item_price = 9.00,
+        item_total = 18,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l38 = Invoice_Line_Item.objects.create(
+        invoice = inv8,
+        item = i3,
+        quantity = 2,
+        item_price = 107.50,
+        item_total = 215.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l39 = Invoice_Line_Item.objects.create(
+        invoice = inv8,
+        item = i4,
+        quantity = 1,
+        item_price = 10.00,
+        item_total = 10.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
+    l40 = Invoice_Line_Item.objects.create(
+        invoice = inv8,
+        item = i5,
+        quantity = 1,
+        item_price = 5.00,
+        item_total = 5.00,
+        taxes_amount = 0,
+        total_sales = 0
+    )
 
 
     
@@ -562,6 +616,8 @@ def test_in_taxes(db):
     taxes.extract_taxes(inv5)
     taxes.extract_taxes(inv6)
     taxes.extract_taxes(inv7)
+    taxes.extract_taxes(inv8)
+
 
     inv1.refresh_from_db()
     inv2.refresh_from_db()
@@ -570,6 +626,7 @@ def test_in_taxes(db):
     inv5.refresh_from_db()
     inv6.refresh_from_db()
     inv7.refresh_from_db()
+    inv8.refresh_from_db()
     l1.refresh_from_db()
     l2.refresh_from_db()
     l3.refresh_from_db()
@@ -605,8 +662,90 @@ def test_in_taxes(db):
     l33.refresh_from_db()
     l34.refresh_from_db()
     l35.refresh_from_db()
+    l36.refresh_from_db()
+    l37.refresh_from_db()
+    l38.refresh_from_db()
+    l39.refresh_from_db()
+    l40.refresh_from_db()
 
-    assert l1.total_sales == 0.00
-    assert l1.taxes_amount == 0.00
-    assert l2.taxes_amount == 0.00
-    assert l3.taxes_amount == 0.00
+
+    assert l1.total_sales == 180
+    assert l1.taxes_amount == 0
+    assert l2.total_sales == .4
+    assert l2.taxes_amount == 17.6
+    assert l3.total_sales == 215
+    assert l3.taxes_amount == 0
+    assert l4.total_sales == 10
+    assert l4.taxes_amount == 0
+    assert l5.total_sales == 5
+    assert l5.taxes_amount == 0
+    assert l6.total_sales == 178.65
+    assert l6.taxes_amount == 1.35
+    assert l7.total_sales == 16.32
+    assert l7.taxes_amount == 1.68
+    assert l8.total_sales == 195.5
+    assert l8.taxes_amount == 19.5
+    assert l9.total_sales == 5.50
+    assert l9.taxes_amount == 4.50
+    assert l10.total_sales == 5
+    assert l10.taxes_amount == 0
+    assert l11.total_sales == 170.7345
+    assert l11.taxes_amount == 9.2655
+    assert l12.total_sales == 18
+    assert l12.taxes_amount == 0
+    assert l13.total_sales == 189.29
+    assert l13.taxes_amount == 25.71
+    assert l14.total_sales == 9.10
+    assert l14.taxes_amount == .90
+    assert l15.total_sales == 5
+    assert l15.taxes_amount == 0
+    assert l16.total_sales == 153
+    assert l16.taxes_amount == 27
+    assert l17.total_sales == 18
+    assert l17.taxes_amount == 0
+    assert l18.total_sales == 185
+    assert l18.taxes_amount == 30
+    assert l19.total_sales == 8.69565217
+    assert l19.taxes_amount == 1.304347826
+    assert l20.total_sales == 5
+    assert l20.taxes_amount == 0
+    assert l21.total_sales == 180
+    assert l21.taxes_amount == 0
+    assert l22.total_sales == 15.62
+    assert l22.taxes_amount == 2.38
+    assert l23.total_sales == 189
+    assert l23.taxes_amount == 26
+    assert l24.total_sales == 4
+    assert l24.taxes_amount == 6
+    assert l25.total_sales == 5
+    assert l25.taxes_amount == 0
+    assert l26.total_sales == 180
+    assert l26.taxes_amount == 0
+    assert l27.total_sales == 18
+    assert l27.taxes_amount == 0
+    assert l28.total_sales == 215
+    assert l28.taxes_amount == 0
+    assert l29.total_sales == 10
+    assert l29.taxes_amount == 0
+    assert l30.total_sales == 5
+    assert l30.taxes_amount == 0
+    assert l31.total_sales == 170.7345
+    assert l31.taxes_amount == 9.2655
+    assert l32.total_sales == 18
+    assert l32.taxes_amount == 0
+    assert l33.total_sales == 189.29
+    assert l33.taxes_amount == 25.71
+    assert l34.total_sales == 9.10
+    assert l34.taxes_amount == .9
+    assert l35.total_sales == 5
+    assert l35.taxes_amount == 0
+    assert l36.total_sales == 180
+    assert l36.taxes_amount == 0
+    assert l37.total_sales == 18
+    assert l37.taxes_amount == 0
+    assert l38.total_sales == 215
+    assert l38.taxes_amount == 0
+    assert l39.total_sales == 10
+    assert l39.taxes_amount == 0
+    assert l40.total_sales == 5
+    assert l40.taxes_amount == 0
