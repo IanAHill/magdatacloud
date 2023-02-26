@@ -1,7 +1,7 @@
-import models
-
 def extract_IN_taxes(invoice):
-    for line in invoice.line_items.select_related("item").all():  # select_related tells the ORM to join against the Item
+    for line in invoice.line_items.select_related(
+        "item"
+    ).all():  # select_related tells the ORM to join against the Item
         category = line.item.category_name
         total = line.item_total
         price = line.item.purchase_price
@@ -25,7 +25,6 @@ def extract_IN_taxes(invoice):
         line.item.save()
 
 
-
 def extract_KY_taxes(invoice):
     for line in invoice.line_items.select_related("item").all():
         category = line.item.category_name
@@ -33,13 +32,13 @@ def extract_KY_taxes(invoice):
         qty = line.quantity
         units = line.item.retail_unit_in_wholesale
 
-        #vape tax for open systems
+        # vape tax for open systems
         if category == "Vape Juice":
             line.item.total_sales = total / 1.15
-            line.item.taxes_amount = (total / 1.15) * .15
-        #vape tax for closed systems
+            line.item.taxes_amount = (total / 1.15) * 0.15
+        # vape tax for closed systems
         elif category == "Disposable Vapes":
-            line.item.total_sales = total - qty * 1.50 * units    
+            line.item.total_sales = total - qty * 1.50 * units
             line.item.taxes_amount = 1.50 * units * qty
         elif category == "Cloud 8":
             matching_categories = [
@@ -52,9 +51,8 @@ def extract_KY_taxes(invoice):
             if line.item.reporting_sub_category in matching_categories:
                 line.item.total_sales = total * 1.50 * units
                 line.item.taxes_amount = 1.50 * units
-        
+
         line.item.save()
-  
 
 
 def extract_OH_taxes(invoice):
@@ -63,11 +61,11 @@ def extract_OH_taxes(invoice):
         total = line.item_total
         qty = line.quantity
         mls = line.item.e_liquid_ml
-        #OTP Tax
+        # OTP Tax
         if line.item.otp_tax:
             line.item.total_sales = total - line.item.OH_otp_tax * qty
             line.item.taxes_amount = line.item.OH_otp_tax * qty
-        #Vape Tax == .10 * mls for open and closed systems, not cloud 8 products (nicotene only)
+        # Vape Tax == .10 * mls for open and closed systems, not cloud 8 products (nicotene only)
         if category == "Disposable Vapes":
             line.item.total_sales = total - (mls * qty * 0.10)
             line.item.taxes_amount = mls * qty * 0.10
@@ -75,9 +73,7 @@ def extract_OH_taxes(invoice):
             line.item.total_sales = total - (mls * qty * 0.10)
             line.item.taxes_amount = mls * qty * 0.10
 
-        
         line.item.save()
-                
 
 
 def extract_WV_taxes(invoice):
@@ -86,11 +82,11 @@ def extract_WV_taxes(invoice):
         total = line.item_total
         qty = line.quantity
         mls = line.item.e_liquid_ml
-        #OTP Tax
+        # OTP Tax
         if line.item.WV_otp_tax:
             line.item.total_sales = total - line.item.WV_otp_tax * qty
             line.item.taxes_amount = line.item.WV_otp_tax * qty
-        #Vape Tax == $0.075 per ml
+        # Vape Tax == $0.075 per ml
         if category == "Disposable Vapes":
             line.item.total_sales = total - (mls * qty * 0.075)
             line.item.taxes_amount = mls * qty * 0.075
@@ -108,7 +104,7 @@ def extract_WV_taxes(invoice):
             if line.item.reporting_sub_category in matching_categories:
                 line.item.total_sales = total - (mls * qty * 0.075)
                 line.item.taxes_amount = mls * qty * 0.075
-        
+
         line.item.save()
 
 
@@ -135,9 +131,8 @@ def extract_WV_taxes(invoice):
 #             if line.item.reporting_sub_category in matching_categories:
 #                 line.item.total_sales = total - (mls * qty * 0.10)
 #                 line.item.taxes_amount = mls * qty * 0.10
-        
-#         line.item.save()
 
+#         line.item.save()
 
 
 def extract_IL_taxes(invoice):
@@ -145,7 +140,7 @@ def extract_IL_taxes(invoice):
         price = line.item.purchase_price
         category = line.item.category_name
         total = line.item_total
-        qty = line.quantity    
+        qty = line.quantity
         # IL Vape Tax == 15% wholesale cost for open and closed systems
         if category == "Disposable Vapes":
             line.item.total_sales = total - (price * qty * 0.15)
@@ -164,15 +159,15 @@ def extract_IL_taxes(invoice):
             if line.item.reporting_sub_category in matching_categories:
                 line.item.total_sales = total - (price * qty * 0.15)
                 line.item.taxes_amount = price * qty * 0.15
-        
+
         line.item.save()
 
 
-#zoho automatically extracts vape tax for PA
+# zoho automatically extracts vape tax for PA
 def extract_PA_taxes(invoice):
     for line in invoice.line_items.select_related("item").all():
         total = line.item_total
-        qty = line.quantity    
+        qty = line.quantity
         if line.item.PA_otp_tax:
             line.item.total_sales = total - line.item.PA_otp_tax * qty
             line.item.taxes_amount = line.item.PA_otp_tax * qty
@@ -191,9 +186,13 @@ def extract_taxes(invoice):
         extract_WV_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "IL":
         extract_IL_taxes(invoice)
-    #elif invoice.invoice_level_tax_authority == "NJ":
-        #extract_NJ_taxes(invoice)
-    elif invoice.invoice_level_tax_authority == "PA" and invoice.customer.taxable and not invoice.customer.customer_pays_own_vape_tax:
+    # elif invoice.invoice_level_tax_authority == "NJ":
+    # extract_NJ_taxes(invoice)
+    elif (
+        invoice.invoice_level_tax_authority == "PA"
+        and invoice.customer.taxable
+        and not invoice.customer.customer_pays_vape_tax
+    ):
         extract_PA_taxes(invoice)
     else:
         for line in invoice.line_items.select_related("item").all():
