@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+
 def extract_IN_taxes(invoice):
     for line in invoice.line_items.select_related(
         "item"
@@ -8,8 +11,8 @@ def extract_IN_taxes(invoice):
         qty = line.quantity
         # IN Vape Tax == 15% of wholesale cost on closed systems only
         if category == "Disposable Vapes":
-            line.item.total_sales = total - price * qty * 0.15
-            line.item.taxes_amount = price * qty * 0.15
+            line.item.total_sales = total - price * qty * Decimal(0.15)
+            line.item.taxes_amount = price * qty * Decimal(0.15)
         elif category == "Cloud 8":
             matching_categories = [
                 "1ML Cartridge",
@@ -19,8 +22,8 @@ def extract_IN_taxes(invoice):
                 "2ML Pro Dispostables",
             ]
             if line.item.reporting_sub_category in matching_categories:
-                line.item.total_sales = total - price * qty * 0.15
-                line.item.taxes_amount = price * qty * 0.15
+                line.item.total_sales = total - price * qty * Decimal(0.15)
+                line.item.taxes_amount = price * qty * Decimal(0.15)
 
         line.item.save()
 
@@ -30,16 +33,16 @@ def extract_KY_taxes(invoice):
         category = line.item.category_name
         total = line.item_total
         qty = line.quantity
-        units = line.item.retail_unit_in_wholesale
+        units = line.item.retail_units_in_wholesale
 
         # vape tax for open systems
         if category == "Vape Juice":
-            line.item.total_sales = total / 1.15
-            line.item.taxes_amount = (total / 1.15) * 0.15
+            line.item.total_sales = total / Decimal(1.15)
+            line.item.taxes_amount = (total / Decimal(1.15)) * Decimal(0.15)
         # vape tax for closed systems
         elif category == "Disposable Vapes":
-            line.item.total_sales = total - qty * 1.50 * units
-            line.item.taxes_amount = 1.50 * units * qty
+            line.item.total_sales = total - qty * Decimal(1.50) * units
+            line.item.taxes_amount = Decimal(1.50) * units * qty
         elif category == "Cloud 8":
             matching_categories = [
                 "1ML Cartridge",
@@ -49,8 +52,8 @@ def extract_KY_taxes(invoice):
                 "2ML Pro Dispostables",
             ]
             if line.item.reporting_sub_category in matching_categories:
-                line.item.total_sales = total * 1.50 * units
-                line.item.taxes_amount = 1.50 * units
+                line.item.total_sales = total * Decimal(1.50) * units
+                line.item.taxes_amount = Decimal(1.50) * units
 
         line.item.save()
 
@@ -60,18 +63,18 @@ def extract_OH_taxes(invoice):
         category = line.item.category_name
         total = line.item_total
         qty = line.quantity
-        mls = line.item.e_liquid_ml
+        mls = Decimal(line.item.e_liquid_ml)
         # OTP Tax
-        if line.item.otp_tax:
+        if line.item.OH_otp_tax:
             line.item.total_sales = total - line.item.OH_otp_tax * qty
             line.item.taxes_amount = line.item.OH_otp_tax * qty
         # Vape Tax == .10 * mls for open and closed systems, not cloud 8 products (nicotene only)
         if category == "Disposable Vapes":
-            line.item.total_sales = total - (mls * qty * 0.10)
-            line.item.taxes_amount = mls * qty * 0.10
+            line.item.total_sales = total - (mls * qty * Decimal(0.10))
+            line.item.taxes_amount = mls * qty * Decimal(0.10)
         elif category == "Vape Juice":
-            line.item.total_sales = total - (mls * qty * 0.10)
-            line.item.taxes_amount = mls * qty * 0.10
+            line.item.total_sales = total - (mls * qty * Decimal(0.10))
+            line.item.taxes_amount = mls * qty * Decimal(0.10)
 
         line.item.save()
 
@@ -88,10 +91,10 @@ def extract_WV_taxes(invoice):
             line.item.taxes_amount = line.item.WV_otp_tax * qty
         # Vape Tax == $0.075 per ml
         if category == "Disposable Vapes":
-            line.item.total_sales = total - (mls * qty * 0.075)
+            line.item.total_sales = total - Decimal(mls * qty * 0.075)
             line.item.taxes_amount = mls * qty * 0.075
         elif category == "Vape Juice":
-            line.item.total_sales = total - (mls * qty * 0.075)
+            line.item.total_sales = total - Decimal(mls * qty * 0.075)
             line.item.taxes_amount = mls * qty * 0.075
         elif category == "Cloud 8":
             matching_categories = [
@@ -102,7 +105,7 @@ def extract_WV_taxes(invoice):
                 "2ML Pro Dispostables",
             ]
             if line.item.reporting_sub_category in matching_categories:
-                line.item.total_sales = total - (mls * qty * 0.075)
+                line.item.total_sales = total - Decimal(mls * qty * 0.075)
                 line.item.taxes_amount = mls * qty * 0.075
 
         line.item.save()
@@ -143,11 +146,11 @@ def extract_IL_taxes(invoice):
         qty = line.quantity
         # IL Vape Tax == 15% wholesale cost for open and closed systems
         if category == "Disposable Vapes":
-            line.item.total_sales = total - (price * qty * 0.15)
-            line.item.taxes_amount = price * qty * 0.15
+            line.item.total_sales = total - (price * qty * Decimal(0.15))
+            line.item.taxes_amount = price * qty * Decimal(0.15)
         elif category == "Vape Juice":
-            line.item.total_sales = total - (price * qty * 0.15)
-            line.item.taxes_amount = price * qty * 0.15
+            line.item.total_sales = total - (price * qty * Decimal(0.15))
+            line.item.taxes_amount = price * qty * Decimal(0.15)
         elif category == "Cloud 8":
             matching_categories = [
                 "1ML Cartridge",
@@ -157,8 +160,8 @@ def extract_IL_taxes(invoice):
                 "2ML Pro Dispostables",
             ]
             if line.item.reporting_sub_category in matching_categories:
-                line.item.total_sales = total - (price * qty * 0.15)
-                line.item.taxes_amount = price * qty * 0.15
+                line.item.total_sales = total - (price * qty * Decimal(0.15))
+                line.item.taxes_amount = price * qty * Decimal(0.15)
 
         line.item.save()
 
