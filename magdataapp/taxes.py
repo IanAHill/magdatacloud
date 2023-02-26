@@ -39,8 +39,8 @@ def extract_KY_taxes(invoice):
             line.item.taxes_amount = (total / 1.15) * .15
         #vape tax for closed systems
         elif category == "Disposable Vapes":
-            line.item.total_sales = total * 1.50 * units    
-            line.item.taxes_amount = 1.50 * units 
+            line.item.total_sales = total - qty * 1.50 * units    
+            line.item.taxes_amount = 1.50 * units * qty
         elif category == "Cloud 8":
             matching_categories = [
                 "1ML Cartridge",
@@ -67,24 +67,14 @@ def extract_OH_taxes(invoice):
         if line.item.otp_tax:
             line.item.total_sales = total - line.item.OH_otp_tax * qty
             line.item.taxes_amount = line.item.OH_otp_tax * qty
-        #Vape Tax == .10 * mls for open and closed systems
+        #Vape Tax == .10 * mls for open and closed systems, not cloud 8 products (nicotene only)
         if category == "Disposable Vapes":
             line.item.total_sales = total - (mls * qty * 0.10)
             line.item.taxes_amount = mls * qty * 0.10
         elif category == "Vape Juice":
             line.item.total_sales = total - (mls * qty * 0.10)
             line.item.taxes_amount = mls * qty * 0.10
-        elif category == "Cloud 8":
-            matching_categories = [
-                "1ML Cartridge",
-                "1ML Disposable",
-                "1ML Disposables",
-                "2ML Disposables",
-                "2ML Pro Dispostables",
-            ]
-            if line.item.reporting_sub_category in matching_categories:
-                line.item.total_sales = total - (mls * qty * 0.10)
-                line.item.taxes_amount = mls * qty * 0.10
+
         
         line.item.save()
                 
@@ -122,6 +112,33 @@ def extract_WV_taxes(invoice):
         line.item.save()
 
 
+## NJ not needed, because non-nicotene vapes are not subject to vape tax in NJ, and we only sell Cloud 8 there because flavored nicotene vapes are banned in NJ.
+# def extract_NJ_taxes(invoice):
+#     for line in invoice.line_items.select_related("item").all():
+#         category = line.item.category_name
+#         total = line.item_total
+#         qty = line.quantity
+#         mls = line.item.e_liquid_ml
+
+#         #NJ Vape Tax == $0.10 per ml for closed
+#         if category == "Disposable Vapes":
+#             line.item.total_sales = total - (mls * qty * 0.10)
+#             line.item.taxes_amount = mls * qty * 0.10
+#         elif category == "Cloud 8":
+#             matching_categories = [
+#                 "1ML Cartridge",
+#                 "1ML Disposable",
+#                 "1ML Disposables",
+#                 "2ML Disposables",
+#                 "2ML Pro Dispostables",
+#             ]
+#             if line.item.reporting_sub_category in matching_categories:
+#                 line.item.total_sales = total - (mls * qty * 0.10)
+#                 line.item.taxes_amount = mls * qty * 0.10
+        
+#         line.item.save()
+
+
 
 def extract_IL_taxes(invoice):
     for line in invoice.line_items.select_related("item").all():
@@ -151,17 +168,33 @@ def extract_IL_taxes(invoice):
         line.item.save()
 
 
+#zoho automatically extracts vape tax for PA
+def extract_PA_taxes(invoice):
+    for line in invoice.line_items.select_related("item").all():
+        total = line.item_total
+        qty = line.quantity    
+        if line.item.PA_otp_tax:
+            line.item.total_sales = total - line.item.PA_otp_tax * qty
+            line.item.taxes_amount = line.item.PA_otp_tax * qty
+
+        line.item.save()
+
+
 def extract_taxes(invoice):
     if invoice.invoice_level_tax_authority == "IN":
         extract_IN_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "KY":
         extract_KY_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "OH":
-        extract_KY_taxes(invoice)
+        extract_OH_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "WV":
-        extract_KY_taxes(invoice)
+        extract_WV_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "IL":
-        extract_KY_taxes(invoice)
+        extract_IL_taxes(invoice)
+    #elif invoice.invoice_level_tax_authority == "NJ":
+        #extract_NJ_taxes(invoice)
+    elif invoice.invoice_level_tax_authority == "PA" and invoice.customer.taxable and not invoice.customer.customer_pays_own_vape_tax:
+        extract_PA_taxes(invoice)
     else:
         for line in invoice.line_items.select_related("item").all():
             line.item.total_sales = line.item_total
