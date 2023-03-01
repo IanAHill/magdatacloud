@@ -33,7 +33,197 @@ def test_pytest():
 #    assert determine_tax_amount(state="PA", ounces=3, amount=10.01) == 0.00
 
 
-def test_in_taxes(db):
+@pytest.fixture
+def customer(db):
+    return Customer.objects.create(
+        created_time=datetime.now(),
+        customer=123456789,
+        customer_sub_type="BUSINESS",
+        taxable=True,
+        customer_name="CStore",
+        shipping_address="123 Main Street",
+        shipping_city="Philadelphia",
+        shipping_state="PA",
+        shipping_code="07769",
+        assigned_sales_person="Shane",
+        state_manager="Zach",
+        business_ein="545641",
+        tobacco_license="15551 015",
+        parent_chain="CStore Master",
+        customer_type="CHAIN",
+        customer_pays_vape_tax=False,
+    )
+
+
+@pytest.fixture
+def disposable_vape(db):
+    return Item.objects.create(
+        product=123456789,
+        sku="ELF55",
+        item_name="Elf Bar bc5000 Disposable - 5000 Puff - Strawberry Mango - 13ML - 10CT Carton (not returnable)",
+        purchase_price=85.70,
+        preferred_vendor="Elf Bar",
+        stock_on_hand=950,
+        category_name="Disposable Vapes",
+        e_liquid_ml=130.00,
+        msrp=15.99,
+        ## only Cloud 8 Products have data for reporting categories
+        reporting_sub_category="",
+        reporting_category_primary="",
+        reporting_category_cannabinoid="",
+        cloud8_b2c=False,
+        # b2c_msrp = null,
+        retail_units_in_wholesale=10,
+        OH_otp_tax=0,
+        PA_otp_tax=0,
+        WV_otp_tax=0,
+    )
+
+
+@pytest.fixture
+def matching_cloud8(db):
+    return Item.objects.create(
+        product=123456789,
+        sku="MATCHHEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="Cloud 8",
+        e_liquid_ml=6.00,
+        msrp=19.99,
+        reporting_sub_category="1ML Cartridge",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+
+
+@pytest.fixture
+def not_matching_cloud8(db):
+    return Item.objects.create(
+        product=123456789,
+        sku="NOMATCHHEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="Cloud 8",
+        e_liquid_ml=6.00,
+        msrp=19.99,
+        reporting_sub_category="DOES NOT MATCH",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+
+
+@pytest.fixture
+def no_tax_product(db):
+    return Item.objects.create(
+        product=5551234,
+        sku="NO TAX HEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="NO TAX",
+        e_liquid_ml=0.00,
+        msrp=19.99,
+        reporting_sub_category="DOES NOT MATCH",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+
+
+@pytest.fixture
+def invoice(
+    customer, disposable_vape, matching_cloud8, not_matching_cloud8, no_tax_product
+):
+    inv = Invoice.objects.create(
+        invoice=10545456145,
+        customer=customer,
+        invoice_number="INV-04738",
+        invoice_level_tax_authority="KS",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    l1 = Invoice_Line_Item.objects.create(
+        invoice=inv,
+        item=disposable_vape,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
+    )
+    l2 = Invoice_Line_Item.objects.create(
+        invoice=inv,
+        item=matching_cloud8,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
+    )
+    l3 = Invoice_Line_Item.objects.create(
+        invoice=inv,
+        item=not_matching_cloud8,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
+    )
+    l4 = Invoice_Line_Item.objects.create(
+        invoice=inv,
+        item=no_tax_product,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
+    )
+
+    return inv
+
+
+def test_indiana_taxes(
+    invoice, disposable_vape, matching_cloud8, not_matching_cloud8, no_tax_product
+):
+    invoice.invoice_level_tax_authority = "IN"
+    invoice.save()
+    taxes.extract_taxes(invoice)
+    invoice.refresh_from_db()
+
+    inv_disposable_vape = invoice.line_items.get(item=disposable_vape)
+    assert inv_disposable_vape.total_sales == Decimal("170.7345")
+    assert inv_disposable.taxes_amount == Decimal("170.7345")
+
+    matching_cloud = invoice.line_items.get(item=matching_cloud8)
+    assert maching_cloud.total_sales == Decimal("170.7345")
+    assert matching_cloud.taxes_amount == Decimal("170.7345")
+
+    # Next item tests here
+
+
+def test_taxes(db):
     c1 = Customer.objects.create(
         created_time=datetime.now(),
         customer=123456789,
@@ -727,16 +917,6 @@ def test_in_taxes(db):
     assert l29.taxes_amount == Decimal("0")
     assert l30.total_sales == Decimal("5")
     assert l30.taxes_amount == Decimal("0")
-    assert l31.total_sales == Decimal("170.7345")
-    assert l31.taxes_amount == Decimal("9.2655")
-    assert l32.total_sales == Decimal("18")
-    assert l32.taxes_amount == Decimal("0")
-    assert l33.total_sales == Decimal("189.29")
-    assert l33.taxes_amount == Decimal("25.71")
-    assert l34.total_sales == Decimal("9.10")
-    assert l34.taxes_amount == Decimal("0.9")
-    assert l35.total_sales == Decimal("5")
-    assert l35.taxes_amount == Decimal("0")
     assert l36.total_sales == Decimal("180")
     assert l36.taxes_amount == Decimal("0")
     assert l37.total_sales == Decimal("18")

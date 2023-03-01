@@ -1,5 +1,13 @@
 from decimal import Decimal
 
+MATCHING_CATEGORIES = [
+    "1ML Cartridge",
+    "1ML Disposable",
+    "1ML Disposables",
+    "2ML Disposables",
+    "2ML Pro Disposables",
+]
+
 
 def extract_IN_taxes(invoice):
     for line in invoice.line_items.select_related(
@@ -14,14 +22,7 @@ def extract_IN_taxes(invoice):
             line.total_sales = total - price * qty * Decimal(0.15)
             line.taxes_amount = price * qty * Decimal(0.15)
         elif category == "Cloud 8":
-            matching_categories = [
-                "1ML Cartridge",
-                "1ML Disposable",
-                "1ML Disposables",
-                "2ML Disposables",
-                "2ML Pro Dispostables",
-            ]
-            if line.item.reporting_sub_category in matching_categories:
+            if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - price * qty * Decimal(0.15)
                 line.taxes_amount = price * qty * Decimal(0.15)
 
@@ -44,14 +45,7 @@ def extract_KY_taxes(invoice):
             line.total_sales = total - qty * Decimal(1.50) * units
             line.taxes_amount = Decimal(1.50) * units * qty
         elif category == "Cloud 8":
-            matching_categories = [
-                "1ML Cartridge",
-                "1ML Disposable",
-                "1ML Disposables",
-                "2ML Disposables",
-                "2ML Pro Dispostables",
-            ]
-            if line.item.reporting_sub_category in matching_categories:
+            if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total * Decimal(1.50) * units
                 line.taxes_amount = Decimal(1.50) * units
 
@@ -97,14 +91,7 @@ def extract_WV_taxes(invoice):
             line.total_sales = total - Decimal(mls * qty * 0.075)
             line.taxes_amount = mls * qty * 0.075
         elif category == "Cloud 8":
-            matching_categories = [
-                "1ML Cartridge",
-                "1ML Disposable",
-                "1ML Disposables",
-                "2ML Disposables",
-                "2ML Pro Dispostables",
-            ]
-            if line.item.reporting_sub_category in matching_categories:
+            if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - Decimal(mls * qty * 0.075)
                 line.taxes_amount = mls * qty * 0.075
 
@@ -152,14 +139,7 @@ def extract_IL_taxes(invoice):
             line.total_sales = total - (price * qty * Decimal(0.15))
             line.taxes_amount = price * qty * Decimal(0.15)
         elif category == "Cloud 8":
-            matching_categories = [
-                "1ML Cartridge",
-                "1ML Disposable",
-                "1ML Disposables",
-                "2ML Disposables",
-                "2ML Pro Dispostables",
-            ]
-            if line.item.reporting_sub_category in matching_categories:
+            if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - (price * qty * Decimal(0.15))
                 line.taxes_amount = price * qty * Decimal(0.15)
 
