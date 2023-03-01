@@ -11,28 +11,6 @@ def test_pytest():
     assert True
 
 
-# def test_invalid_arguments():
-
-# with pytest.raises(ValueError):
-#     determine_tax_amount(state="PA")
-
-# Equivalient to the above pytest.raises
-#    failed = False
-#    try:
-#        determine_tax_amount(state="PA")
-#    except ValueError:
-#        failed = True
-#
-#    assert failed
-
-# with pytest.raises(ValueError):
-# determine_tax_amount(state="PA", ounces=3)
-
-
-# def test_valid_arguments():
-#    assert determine_tax_amount(state="PA", ounces=3, amount=10.01) == 0.00
-
-
 @pytest.fixture
 def customer(db):
     return Customer.objects.create(
@@ -204,6 +182,7 @@ def invoice(
     return inv
 
 
+
 def test_indiana_taxes(
     invoice, disposable_vape, matching_cloud8, not_matching_cloud8, no_tax_product
 ):
@@ -213,14 +192,21 @@ def test_indiana_taxes(
     invoice.refresh_from_db()
 
     inv_disposable_vape = invoice.line_items.get(item=disposable_vape)
-    assert inv_disposable_vape.total_sales == Decimal("170.7345")
-    assert inv_disposable.taxes_amount == Decimal("170.7345")
+    assert inv_disposable_vape.total_sales == Decimal("189.29")
+    assert inv_disposable_vape.taxes_amount == Decimal("25.71")
 
     matching_cloud = invoice.line_items.get(item=matching_cloud8)
     assert maching_cloud.total_sales == Decimal("170.7345")
     assert matching_cloud.taxes_amount == Decimal("170.7345")
 
+
+
     # Next item tests here
+
+
+
+
+
 
 
 def test_taxes(db):
