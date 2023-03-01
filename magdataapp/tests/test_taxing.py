@@ -68,7 +68,7 @@ def test_in_taxes(db):
         customer_type = "CHAIN",
         customer_pays_vape_tax = True,
         )
-    
+
     i1 = Item.objects.create(
         product = 123456789,
         sku = "HEMP47",
@@ -178,7 +178,7 @@ def test_in_taxes(db):
         customer = c1,
         invoice_number = "INV-04738",
         invoice_level_tax_authority = "PA",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv2 = Invoice.objects.create(
@@ -186,7 +186,7 @@ def test_in_taxes(db):
         customer = c2,
         invoice_number = "INV-04739",
         invoice_level_tax_authority = "WV",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv3 = Invoice.objects.create(
@@ -194,7 +194,7 @@ def test_in_taxes(db):
         customer = c1,
         invoice_number = "INV-44739",
         invoice_level_tax_authority = "IN",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv4 = Invoice.objects.create(
@@ -202,7 +202,7 @@ def test_in_taxes(db):
         customer = c2,
         invoice_number = "INV-44739",
         invoice_level_tax_authority = "KY",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv5 = Invoice.objects.create(
@@ -210,7 +210,7 @@ def test_in_taxes(db):
         customer = c1,
         invoice_number = "INV-12569",
         invoice_level_tax_authority = "OH",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv6 = Invoice.objects.create(
@@ -218,7 +218,7 @@ def test_in_taxes(db):
         customer = c2,
         invoice_number = "INV-02569",
         invoice_level_tax_authority = "NJ",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv7 = Invoice.objects.create(
@@ -226,7 +226,7 @@ def test_in_taxes(db):
         customer = c1,
         invoice_number = "INV-02569",
         invoice_level_tax_authority = "IL",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
     inv8 = Invoice.objects.create(
@@ -234,7 +234,7 @@ def test_in_taxes(db):
         customer = c2,
         invoice_number = "INV-02569",
         invoice_level_tax_authority = "FL",
-        invoice_date = datetime.today,
+        invoice_date = datetime.today(),
         invoice_status = "Closed",
     )
 
@@ -608,7 +608,7 @@ def test_in_taxes(db):
     )
 
 
-    
+
     taxes.extract_taxes(inv1)
     taxes.extract_taxes(inv2)
     taxes.extract_taxes(inv3)
