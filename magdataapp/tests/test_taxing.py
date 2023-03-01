@@ -1,18 +1,20 @@
 import pytest
 
+from decimal import Decimal
 from magdataapp.models import *
 from datetime import datetime
 from magdataapp import taxes
+
 
 def test_pytest():
     # Just to make sure pytest is up and working
     assert True
 
 
-#def test_invalid_arguments():
+# def test_invalid_arguments():
 
-   # with pytest.raises(ValueError):
-   #     determine_tax_amount(state="PA")
+# with pytest.raises(ValueError):
+#     determine_tax_amount(state="PA")
 
 # Equivalient to the above pytest.raises
 #    failed = False
@@ -23,591 +25,779 @@ def test_pytest():
 #
 #    assert failed
 
-   # with pytest.raises(ValueError):
-       # determine_tax_amount(state="PA", ounces=3)
+# with pytest.raises(ValueError):
+# determine_tax_amount(state="PA", ounces=3)
 
 
-#def test_valid_arguments():
+# def test_valid_arguments():
 #    assert determine_tax_amount(state="PA", ounces=3, amount=10.01) == 0.00
 
 
-def test_in_taxes(db):
-    c1 = Customer.objects.create(
-        created_time = datetime.now(),
-        customer = 123456789,
-        customer_sub_type = "BUSINESS",
-        taxable = True,
-        customer_name = "CStore",
-        shipping_address = "123 Main Street",
-        shipping_city = "Philadelphia",
-        shipping_state = "PA",
-        shipping_code = "07769",
-        assigned_sales_person = "Shane",
-        state_manager = "Zach",
-        business_ein = "545641",
-        tobacco_license = "15551 015",
-        parent_chain = "CStore Master",
-        customer_type = "CHAIN",
-        customer_pays_vape_tax = False,
-        )
-    c2 = Customer.objects.create(
-        created_time = datetime.now(),
-        customer = 123456789,
-        customer_sub_type = "BUSINESS",
-        taxable = True,
-        customer_name = "Klafters WV",
-        shipping_address = "123 Main Street",
-        shipping_city = "City",
-        shipping_state = "WV",
-        shipping_code = "07769",
-        assigned_sales_person = "Shane",
-        state_manager = "Zach",
-        business_ein = "545641",
-        tobacco_license = "15551 015",
-        parent_chain = "CStore Master",
-        customer_type = "CHAIN",
-        customer_pays_vape_tax = True,
-        )
-
-    i1 = Item.objects.create(
-        product = 123456789,
-        sku = "HEMP47",
-        item_name = "Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
-        purchase_price = 20.59,
-        preferred_vendor = "MAG Warehouse",
-        stock_on_hand = 150,
-        category_name = "Cloud 8",
-        e_liquid_ml = 6.00,
-        msrp = 19.99,
-        reporting_sub_category = "1ML Cartridge",
-        reporting_category_primary = "Vapes",
-        reporting_category_cannabinoid = "Delta 8",
-        cloud8_b2c = True,
-        b2c_msrp = 29.99,
-        retail_units_in_wholesale = 6,
-        OH_otp_tax = 0.00,
-        PA_otp_tax = 0.00,
-        WV_otp_tax = 0.00,
-        )
-    i2 = Item.objects.create(
-        product = 123456789,
-        sku = "SEN47",
-        item_name = "American Club Expanded Pipe Tobacco - Menthol - 16oz -1ct",
-        purchase_price = 7.00,
-        preferred_vendor = "Seneca",
-        stock_on_hand = 1150,
-        category_name = "Rolling Tobacco",
-        e_liquid_ml = 0.00,
-        msrp = 13.99,
-        ## only Cloud 8 Products have data for reporting categories
-        reporting_sub_category = "",
-        reporting_category_primary = "",
-        reporting_category_cannabinoid = "",
-        cloud8_b2c = False,
-        #b2c_msrp = null,
-        retail_units_in_wholesale = 1,
-        OH_otp_tax = 1.19,
-        PA_otp_tax = 8.80,
-        WV_otp_tax = 0.84,
-        )
-    i3 = Item.objects.create(
-        product = 123456789,
-        sku = "ELF55",
-        item_name = "Elf Bar bc5000 Disposable - 5000 Puff - Strawberry Mango - 13ML - 10CT Carton (not returnable)",
-        purchase_price = 85.70,
-        preferred_vendor = "Elf Bar",
-        stock_on_hand = 950,
-        category_name = "Disposable Vapes",
-        e_liquid_ml = 130.00,
-        msrp = 15.99,
-        ## only Cloud 8 Products have data for reporting categories
-        reporting_sub_category = "",
-        reporting_category_primary = "",
-        reporting_category_cannabinoid = "",
-        cloud8_b2c = False,
-        #b2c_msrp = null,
-        retail_units_in_wholesale = 10,
-        OH_otp_tax = 0,
-        PA_otp_tax = 0,
-        WV_otp_tax = 0,
-        )
-    i4 = Item.objects.create(
-        product = 123456789,
-        sku = "BAD558",
-        item_name = "Bad Drip - Bad Apple 60ml 3mg 1CT ",
-        purchase_price = 6.00,
-        preferred_vendor = "Bad Drip",
-        stock_on_hand = 3950,
-        category_name = "Vape Juice",
-        e_liquid_ml = 60.00,
-        msrp = 19.99,
-        ## only Cloud 8 Products have data for reporting categories
-        reporting_sub_category = "",
-        reporting_category_primary = "",
-        reporting_category_cannabinoid = "",
-        cloud8_b2c = False,
-        #b2c_msrp = null,
-        retail_units_in_wholesale = 1,
-        OH_otp_tax = 0,
-        PA_otp_tax = 0,
-        WV_otp_tax = 0,
-        )
-    i5 = Item.objects.create(
-        product = 4654687486,
-        sku = "HEMPMERCH45",
-        item_name = "Cloud 8 T Shirt - Large",
-        purchase_price = 4.00,
-        preferred_vendor = "MAG Warehouse",
-        stock_on_hand = 50,
-        category_name = "Cloud 8 - Marketing Materials",
-        e_liquid_ml = 0.00,
-        msrp = 7.99,
-        reporting_sub_category = "",
-        reporting_category_primary = "",
-        reporting_category_cannabinoid = "",
-        cloud8_b2c = False,
-        #b2c_msrp = null,
-        retail_units_in_wholesale = 1,
-        OH_otp_tax = 0,
-        PA_otp_tax = 0,
-        WV_otp_tax = 0,
-        )
-
-    inv1 = Invoice.objects.create(
-        invoice = 545456145,
-        customer = c1,
-        invoice_number = "INV-04738",
-        invoice_level_tax_authority = "PA",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv2 = Invoice.objects.create(
-        invoice = 533456145,
-        customer = c2,
-        invoice_number = "INV-04739",
-        invoice_level_tax_authority = "WV",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv3 = Invoice.objects.create(
-        invoice = 532226145,
-        customer = c1,
-        invoice_number = "INV-44739",
-        invoice_level_tax_authority = "IN",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv4 = Invoice.objects.create(
-        invoice = 532226145,
-        customer = c2,
-        invoice_number = "INV-44739",
-        invoice_level_tax_authority = "KY",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv5 = Invoice.objects.create(
-        invoice = 532226145,
-        customer = c1,
-        invoice_number = "INV-12569",
-        invoice_level_tax_authority = "OH",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv6 = Invoice.objects.create(
-        invoice = 5322244145,
-        customer = c2,
-        invoice_number = "INV-02569",
-        invoice_level_tax_authority = "NJ",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv7 = Invoice.objects.create(
-        invoice = 5322244145,
-        customer = c1,
-        invoice_number = "INV-02569",
-        invoice_level_tax_authority = "IL",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
-    )
-    inv8 = Invoice.objects.create(
-        invoice = 5322244145,
-        customer = c2,
-        invoice_number = "INV-02569",
-        invoice_level_tax_authority = "FL",
-        invoice_date = datetime.today(),
-        invoice_status = "Closed",
+@pytest.fixture
+def customer(db):
+    return Customer.objects.create(
+        created_time=datetime.now(),
+        customer=123456789,
+        customer_sub_type="BUSINESS",
+        taxable=True,
+        customer_name="CStore",
+        shipping_address="123 Main Street",
+        shipping_city="Philadelphia",
+        shipping_state="PA",
+        shipping_code="07769",
+        assigned_sales_person="Shane",
+        state_manager="Zach",
+        business_ein="545641",
+        tobacco_license="15551 015",
+        parent_chain="CStore Master",
+        customer_type="CHAIN",
+        customer_pays_vape_tax=False,
     )
 
-#Invoice 1 Line Items
+
+@pytest.fixture
+def disposable_vape(db):
+    return Item.objects.create(
+        product=123456789,
+        sku="ELF55",
+        item_name="Elf Bar bc5000 Disposable - 5000 Puff - Strawberry Mango - 13ML - 10CT Carton (not returnable)",
+        purchase_price=85.70,
+        preferred_vendor="Elf Bar",
+        stock_on_hand=950,
+        category_name="Disposable Vapes",
+        e_liquid_ml=130.00,
+        msrp=15.99,
+        ## only Cloud 8 Products have data for reporting categories
+        reporting_sub_category="",
+        reporting_category_primary="",
+        reporting_category_cannabinoid="",
+        cloud8_b2c=False,
+        # b2c_msrp = null,
+        retail_units_in_wholesale=10,
+        OH_otp_tax=0,
+        PA_otp_tax=0,
+        WV_otp_tax=0,
+    )
+
+
+@pytest.fixture
+def matching_cloud8(db):
+    return Item.objects.create(
+        product=123456789,
+        sku="MATCHHEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="Cloud 8",
+        e_liquid_ml=6.00,
+        msrp=19.99,
+        reporting_sub_category="1ML Cartridge",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+
+
+@pytest.fixture
+def not_matching_cloud8(db):
+    return Item.objects.create(
+        product=123456789,
+        sku="NOMATCHHEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="Cloud 8",
+        e_liquid_ml=6.00,
+        msrp=19.99,
+        reporting_sub_category="DOES NOT MATCH",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+
+
+@pytest.fixture
+def no_tax_product(db):
+    return Item.objects.create(
+        product=5551234,
+        sku="NO TAX HEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="NO TAX",
+        e_liquid_ml=0.00,
+        msrp=19.99,
+        reporting_sub_category="DOES NOT MATCH",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+
+
+@pytest.fixture
+def invoice(
+    customer, disposable_vape, matching_cloud8, not_matching_cloud8, no_tax_product
+):
+    inv = Invoice.objects.create(
+        invoice=10545456145,
+        customer=customer,
+        invoice_number="INV-04738",
+        invoice_level_tax_authority="KS",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
     l1 = Invoice_Line_Item.objects.create(
-        invoice = inv1,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv,
+        item=disposable_vape,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l2 = Invoice_Line_Item.objects.create(
-        invoice = inv1,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv,
+        item=matching_cloud8,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l3 = Invoice_Line_Item.objects.create(
-        invoice = inv1,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv,
+        item=not_matching_cloud8,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l4 = Invoice_Line_Item.objects.create(
-        invoice = inv1,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv,
+        item=no_tax_product,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
+    )
+
+    return inv
+
+
+def test_indiana_taxes(
+    invoice, disposable_vape, matching_cloud8, not_matching_cloud8, no_tax_product
+):
+    invoice.invoice_level_tax_authority = "IN"
+    invoice.save()
+    taxes.extract_taxes(invoice)
+    invoice.refresh_from_db()
+
+    inv_disposable_vape = invoice.line_items.get(item=disposable_vape)
+    assert inv_disposable_vape.total_sales == Decimal("170.7345")
+    assert inv_disposable.taxes_amount == Decimal("170.7345")
+
+    matching_cloud = invoice.line_items.get(item=matching_cloud8)
+    assert maching_cloud.total_sales == Decimal("170.7345")
+    assert matching_cloud.taxes_amount == Decimal("170.7345")
+
+    # Next item tests here
+
+
+def test_taxes(db):
+    c1 = Customer.objects.create(
+        created_time=datetime.now(),
+        customer=123456789,
+        customer_sub_type="BUSINESS",
+        taxable=True,
+        customer_name="CStore",
+        shipping_address="123 Main Street",
+        shipping_city="Philadelphia",
+        shipping_state="PA",
+        shipping_code="07769",
+        assigned_sales_person="Shane",
+        state_manager="Zach",
+        business_ein="545641",
+        tobacco_license="15551 015",
+        parent_chain="CStore Master",
+        customer_type="CHAIN",
+        customer_pays_vape_tax=False,
+    )
+    c2 = Customer.objects.create(
+        created_time=datetime.now(),
+        customer=123456789,
+        customer_sub_type="BUSINESS",
+        taxable=True,
+        customer_name="Klafters WV",
+        shipping_address="123 Main Street",
+        shipping_city="City",
+        shipping_state="WV",
+        shipping_code="07769",
+        assigned_sales_person="Shane",
+        state_manager="Zach",
+        business_ein="545641",
+        tobacco_license="15551 015",
+        parent_chain="CStore Master",
+        customer_type="CHAIN",
+        customer_pays_vape_tax=True,
+    )
+
+    i1 = Item.objects.create(
+        product=123456789,
+        sku="HEMP47",
+        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        purchase_price=20.59,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=150,
+        category_name="Cloud 8",
+        e_liquid_ml=6.00,
+        msrp=19.99,
+        reporting_sub_category="1ML Cartridge",
+        reporting_category_primary="Vapes",
+        reporting_category_cannabinoid="Delta 8",
+        cloud8_b2c=True,
+        b2c_msrp=29.99,
+        retail_units_in_wholesale=6,
+        OH_otp_tax=0.00,
+        PA_otp_tax=0.00,
+        WV_otp_tax=0.00,
+    )
+    i2 = Item.objects.create(
+        product=123456789,
+        sku="SEN47",
+        item_name="American Club Expanded Pipe Tobacco - Menthol - 16oz -1ct",
+        purchase_price=7.00,
+        preferred_vendor="Seneca",
+        stock_on_hand=1150,
+        category_name="Rolling Tobacco",
+        e_liquid_ml=0.00,
+        msrp=13.99,
+        ## only Cloud 8 Products have data for reporting categories
+        reporting_sub_category="",
+        reporting_category_primary="",
+        reporting_category_cannabinoid="",
+        cloud8_b2c=False,
+        # b2c_msrp = null,
+        retail_units_in_wholesale=1,
+        OH_otp_tax=1.19,
+        PA_otp_tax=8.80,
+        WV_otp_tax=0.84,
+    )
+    i3 = Item.objects.create(
+        product=123456789,
+        sku="ELF55",
+        item_name="Elf Bar bc5000 Disposable - 5000 Puff - Strawberry Mango - 13ML - 10CT Carton (not returnable)",
+        purchase_price=85.70,
+        preferred_vendor="Elf Bar",
+        stock_on_hand=950,
+        category_name="Disposable Vapes",
+        e_liquid_ml=130.00,
+        msrp=15.99,
+        ## only Cloud 8 Products have data for reporting categories
+        reporting_sub_category="",
+        reporting_category_primary="",
+        reporting_category_cannabinoid="",
+        cloud8_b2c=False,
+        # b2c_msrp = null,
+        retail_units_in_wholesale=10,
+        OH_otp_tax=0,
+        PA_otp_tax=0,
+        WV_otp_tax=0,
+    )
+    i4 = Item.objects.create(
+        product=123456789,
+        sku="BAD558",
+        item_name="Bad Drip - Bad Apple 60ml 3mg 1CT ",
+        purchase_price=6.00,
+        preferred_vendor="Bad Drip",
+        stock_on_hand=3950,
+        category_name="Vape Juice",
+        e_liquid_ml=60.00,
+        msrp=19.99,
+        ## only Cloud 8 Products have data for reporting categories
+        reporting_sub_category="",
+        reporting_category_primary="",
+        reporting_category_cannabinoid="",
+        cloud8_b2c=False,
+        # b2c_msrp = null,
+        retail_units_in_wholesale=1,
+        OH_otp_tax=0,
+        PA_otp_tax=0,
+        WV_otp_tax=0,
+    )
+    i5 = Item.objects.create(
+        product=4654687486,
+        sku="HEMPMERCH45",
+        item_name="Cloud 8 T Shirt - Large",
+        purchase_price=4.00,
+        preferred_vendor="MAG Warehouse",
+        stock_on_hand=50,
+        category_name="Cloud 8 - Marketing Materials",
+        e_liquid_ml=0.00,
+        msrp=7.99,
+        reporting_sub_category="",
+        reporting_category_primary="",
+        reporting_category_cannabinoid="",
+        cloud8_b2c=False,
+        # b2c_msrp = null,
+        retail_units_in_wholesale=1,
+        OH_otp_tax=0,
+        PA_otp_tax=0,
+        WV_otp_tax=0,
+    )
+
+    inv1 = Invoice.objects.create(
+        invoice=545456145,
+        customer=c1,
+        invoice_number="INV-04738",
+        invoice_level_tax_authority="PA",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv2 = Invoice.objects.create(
+        invoice=533456145,
+        customer=c2,
+        invoice_number="INV-04739",
+        invoice_level_tax_authority="WV",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv3 = Invoice.objects.create(
+        invoice=532226145,
+        customer=c1,
+        invoice_number="INV-44739",
+        invoice_level_tax_authority="IN",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv4 = Invoice.objects.create(
+        invoice=532226145,
+        customer=c2,
+        invoice_number="INV-44739",
+        invoice_level_tax_authority="KY",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv5 = Invoice.objects.create(
+        invoice=532226145,
+        customer=c1,
+        invoice_number="INV-12569",
+        invoice_level_tax_authority="OH",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv6 = Invoice.objects.create(
+        invoice=5322244145,
+        customer=c2,
+        invoice_number="INV-02569",
+        invoice_level_tax_authority="NJ",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv7 = Invoice.objects.create(
+        invoice=5322244145,
+        customer=c1,
+        invoice_number="INV-02569",
+        invoice_level_tax_authority="IL",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+    inv8 = Invoice.objects.create(
+        invoice=5322244145,
+        customer=c2,
+        invoice_number="INV-02569",
+        invoice_level_tax_authority="FL",
+        invoice_date=datetime.today(),
+        invoice_status="Closed",
+    )
+
+    # Invoice 1 Line Items
+    l1 = Invoice_Line_Item.objects.create(
+        invoice=inv1,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
+    )
+    l2 = Invoice_Line_Item.objects.create(
+        invoice=inv1,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
+    )
+    l3 = Invoice_Line_Item.objects.create(
+        invoice=inv1,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
+    )
+    l4 = Invoice_Line_Item.objects.create(
+        invoice=inv1,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l5 = Invoice_Line_Item.objects.create(
-        invoice = inv1,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv1,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 2 Line Items
+    # Invoice 2 Line Items
     l6 = Invoice_Line_Item.objects.create(
-        invoice = inv2,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv2,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l7 = Invoice_Line_Item.objects.create(
-        invoice = inv2,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv2,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l8 = Invoice_Line_Item.objects.create(
-        invoice = inv2,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv2,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l9 = Invoice_Line_Item.objects.create(
-        invoice = inv2,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv2,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l10 = Invoice_Line_Item.objects.create(
-        invoice = inv2,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv2,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 3 Line Items
+    # Invoice 3 Line Items
     l11 = Invoice_Line_Item.objects.create(
-        invoice = inv3,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv3,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l12 = Invoice_Line_Item.objects.create(
-        invoice = inv3,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv3,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l13 = Invoice_Line_Item.objects.create(
-        invoice = inv3,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv3,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l14 = Invoice_Line_Item.objects.create(
-        invoice = inv3,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv3,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l15 = Invoice_Line_Item.objects.create(
-        invoice = inv3,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv3,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 4 Line Items
+    # Invoice 4 Line Items
     l16 = Invoice_Line_Item.objects.create(
-        invoice = inv4,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv4,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l17 = Invoice_Line_Item.objects.create(
-        invoice = inv4,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv4,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l18 = Invoice_Line_Item.objects.create(
-        invoice = inv4,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv4,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l19 = Invoice_Line_Item.objects.create(
-        invoice = inv4,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv4,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l20 = Invoice_Line_Item.objects.create(
-        invoice = inv4,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv4,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 5 Line Items
+    # Invoice 5 Line Items
     l21 = Invoice_Line_Item.objects.create(
-        invoice = inv5,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv5,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l22 = Invoice_Line_Item.objects.create(
-        invoice = inv5,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv5,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l23 = Invoice_Line_Item.objects.create(
-        invoice = inv5,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv5,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l24 = Invoice_Line_Item.objects.create(
-        invoice = inv5,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv5,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l25 = Invoice_Line_Item.objects.create(
-        invoice = inv5,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv5,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 6 Line Items
+    # Invoice 6 Line Items
     l26 = Invoice_Line_Item.objects.create(
-        invoice = inv6,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv6,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l27 = Invoice_Line_Item.objects.create(
-        invoice = inv6,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv6,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l28 = Invoice_Line_Item.objects.create(
-        invoice = inv6,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv6,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l29 = Invoice_Line_Item.objects.create(
-        invoice = inv6,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv6,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l30 = Invoice_Line_Item.objects.create(
-        invoice = inv6,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv6,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 7 Line Items
+    # Invoice 7 Line Items
     l31 = Invoice_Line_Item.objects.create(
-        invoice = inv7,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv7,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l32 = Invoice_Line_Item.objects.create(
-        invoice = inv7,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv7,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l33 = Invoice_Line_Item.objects.create(
-        invoice = inv7,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv7,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l34 = Invoice_Line_Item.objects.create(
-        invoice = inv7,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv7,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l35 = Invoice_Line_Item.objects.create(
-        invoice = inv7,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv7,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-#Invoice 8 Line Items
+    # Invoice 8 Line Items
     l36 = Invoice_Line_Item.objects.create(
-        invoice = inv8,
-        item = i1,
-        quantity = 3,
-        item_price = 60.00,
-        item_total = 60.00 * 3,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv8,
+        item=i1,
+        quantity=3,
+        item_price=60.00,
+        item_total=60.00 * 3,
+        taxes_amount=0,
+        total_sales=0,
     )
     l37 = Invoice_Line_Item.objects.create(
-        invoice = inv8,
-        item = i2,
-        quantity = 2,
-        item_price = 9.00,
-        item_total = 18,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv8,
+        item=i2,
+        quantity=2,
+        item_price=9.00,
+        item_total=18,
+        taxes_amount=0,
+        total_sales=0,
     )
     l38 = Invoice_Line_Item.objects.create(
-        invoice = inv8,
-        item = i3,
-        quantity = 2,
-        item_price = 107.50,
-        item_total = 215.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv8,
+        item=i3,
+        quantity=2,
+        item_price=107.50,
+        item_total=215.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l39 = Invoice_Line_Item.objects.create(
-        invoice = inv8,
-        item = i4,
-        quantity = 1,
-        item_price = 10.00,
-        item_total = 10.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv8,
+        item=i4,
+        quantity=1,
+        item_price=10.00,
+        item_total=10.00,
+        taxes_amount=0,
+        total_sales=0,
     )
     l40 = Invoice_Line_Item.objects.create(
-        invoice = inv8,
-        item = i5,
-        quantity = 1,
-        item_price = 5.00,
-        item_total = 5.00,
-        taxes_amount = 0,
-        total_sales = 0
+        invoice=inv8,
+        item=i5,
+        quantity=1,
+        item_price=5.00,
+        item_total=5.00,
+        taxes_amount=0,
+        total_sales=0,
     )
-
-
 
     taxes.extract_taxes(inv1)
     taxes.extract_taxes(inv2)
@@ -617,7 +807,6 @@ def test_in_taxes(db):
     taxes.extract_taxes(inv6)
     taxes.extract_taxes(inv7)
     taxes.extract_taxes(inv8)
-
 
     inv1.refresh_from_db()
     inv2.refresh_from_db()
@@ -668,84 +857,73 @@ def test_in_taxes(db):
     l39.refresh_from_db()
     l40.refresh_from_db()
 
-
-    #assert l1.total_sales == 180
+    assert l1.total_sales == Decimal("0.00")
     assert l1.taxes_amount == 0
-    assert l2.total_sales == .4
-    assert l2.taxes_amount == 17.6
-    assert l3.total_sales == 215
+    assert l2.total_sales == Decimal("0.40")
+    assert l2.taxes_amount == Decimal("17.60")
+    assert l3.total_sales == 0
     assert l3.taxes_amount == 0
-    assert l4.total_sales == 10
+    assert l4.total_sales == 0
     assert l4.taxes_amount == 0
-    assert l5.total_sales == 5
+    assert l5.total_sales == 0
     assert l5.taxes_amount == 0
-    assert l6.total_sales == 178.65
-    assert l6.taxes_amount == 1.35
-    assert l7.total_sales == 16.32
-    assert l7.taxes_amount == 1.68
-    assert l8.total_sales == 195.5
-    assert l8.taxes_amount == 19.5
-    assert l9.total_sales == 5.50
-    assert l9.taxes_amount == 4.50
-    assert l10.total_sales == 5
-    assert l10.taxes_amount == 0
-    assert l11.total_sales == 170.7345
-    assert l11.taxes_amount == 9.2655
-    assert l12.total_sales == 18
-    assert l12.taxes_amount == 0
-    assert l13.total_sales == 189.29
-    assert l13.taxes_amount == 25.71
-    assert l14.total_sales == 9.10
-    assert l14.taxes_amount == .90
-    assert l15.total_sales == 5
-    assert l15.taxes_amount == 0
-    assert l16.total_sales == 153
-    assert l16.taxes_amount == 27
-    assert l17.total_sales == 18
-    assert l17.taxes_amount == 0
-    assert l18.total_sales == 185
-    assert l18.taxes_amount == 30
-    assert l19.total_sales == 8.69565217
-    assert l19.taxes_amount == 1.304347826
-    assert l20.total_sales == 5
-    assert l20.taxes_amount == 0
-    assert l21.total_sales == 180
-    assert l21.taxes_amount == 0
-    assert l22.total_sales == 15.62
-    assert l22.taxes_amount == 2.38
-    assert l23.total_sales == 189
-    assert l23.taxes_amount == 26
-    assert l24.total_sales == 4
-    assert l24.taxes_amount == 6
-    assert l25.total_sales == 5
-    assert l25.taxes_amount == 0
-    assert l26.total_sales == 180
-    assert l26.taxes_amount == 0
-    assert l27.total_sales == 18
-    assert l27.taxes_amount == 0
-    assert l28.total_sales == 215
-    assert l28.taxes_amount == 0
-    assert l29.total_sales == 10
-    assert l29.taxes_amount == 0
-    assert l30.total_sales == 5
-    assert l30.taxes_amount == 0
-    assert l31.total_sales == 170.7345
-    assert l31.taxes_amount == 9.2655
-    assert l32.total_sales == 18
-    assert l32.taxes_amount == 0
-    assert l33.total_sales == 189.29
-    assert l33.taxes_amount == 25.71
-    assert l34.total_sales == 9.10
-    assert l34.taxes_amount == .9
-    assert l35.total_sales == 5
-    assert l35.taxes_amount == 0
-    assert l36.total_sales == 180
-    assert l36.taxes_amount == 0
-    assert l37.total_sales == 18
-    assert l37.taxes_amount == 0
-    assert l38.total_sales == 215
-    assert l38.taxes_amount == 0
-    assert l39.total_sales == 10
-    assert l39.taxes_amount == 0
-    assert l40.total_sales == 5
-    assert l40.taxes_amount == 0
+    assert l6.total_sales == Decimal("178.65")
+    assert l6.taxes_amount == Decimal("1.35")
+    assert l7.total_sales == Decimal("16.32")
+    assert l7.taxes_amount == Decimal("1.68")
+    assert l8.total_sales == Decimal("195.5")
+    assert l8.taxes_amount == Decimal("19.5")
+    assert l9.total_sales == Decimal("5.50")
+    assert l9.taxes_amount == Decimal("4.50")
+    assert l10.total_sales == Decimal("5")
+    assert l10.taxes_amount == Decimal("0")
+    assert l11.total_sales == Decimal("170.7345")
+    assert l11.taxes_amount == Decimal("9.2655")
+    assert l12.total_sales == Decimal("18")
+    assert l12.taxes_amount == Decimal("0")
+    assert l13.total_sales == Decimal("189.29")
+    assert l13.taxes_amount == Decimal("25.71")
+    assert l14.total_sales == Decimal("9.10")
+    assert l14.taxes_amount == Decimal("0.90")
+    assert l15.total_sales == Decimal("5")
+    assert l15.taxes_amount == Decimal("0")
+    assert l16.total_sales == Decimal("153")
+    assert l16.taxes_amount == Decimal("27")
+    assert l17.total_sales == Decimal("18")
+    assert l17.taxes_amount == Decimal("0")
+    assert l18.total_sales == Decimal("185")
+    assert l18.taxes_amount == Decimal("30")
+    assert l19.total_sales == Decimal("8.69565217")
+    assert l19.taxes_amount == Decimal("1.304347826")
+    assert l20.total_sales == Decimal("5")
+    assert l20.taxes_amount == Decimal("0")
+    assert l21.total_sales == Decimal("180")
+    assert l21.taxes_amount == Decimal("0")
+    assert l22.total_sales == Decimal("15.62")
+    assert l22.taxes_amount == Decimal("2.38")
+    assert l23.total_sales == Decimal("189")
+    assert l23.taxes_amount == Decimal("26")
+    assert l24.total_sales == Decimal("4")
+    assert l24.taxes_amount == Decimal("6")
+    assert l25.total_sales == Decimal("5")
+    assert l25.taxes_amount == Decimal("0")
+    assert l26.total_sales == Decimal("180")
+    assert l26.taxes_amount == Decimal("0")
+    assert l27.total_sales == Decimal("18")
+    assert l27.taxes_amount == Decimal("0")
+    assert l28.total_sales == Decimal("215")
+    assert l28.taxes_amount == Decimal("0")
+    assert l29.total_sales == Decimal("10")
+    assert l29.taxes_amount == Decimal("0")
+    assert l30.total_sales == Decimal("5")
+    assert l30.taxes_amount == Decimal("0")
+    assert l36.total_sales == Decimal("180")
+    assert l36.taxes_amount == Decimal("0")
+    assert l37.total_sales == Decimal("18")
+    assert l37.taxes_amount == Decimal("0")
+    assert l38.total_sales == Decimal("215")
+    assert l38.taxes_amount == Decimal("0")
+    assert l39.total_sales == Decimal("10")
+    assert l39.taxes_amount == Decimal("0")
+    assert l40.total_sales == Decimal("5")
+    assert l40.taxes_amount == Decimal("0")
