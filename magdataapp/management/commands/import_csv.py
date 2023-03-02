@@ -16,7 +16,9 @@ def cli(filename):
         invoice_data = invoice_csv.readlines()
     
     for line in invoice_data:
-        line_item = Invoice_Line_Item.objects.get_or_create()
+        line_item, created = Invoice_Line_Item.objects.get_or_create(
+            
+        )
         pass
     ####
     # Write csv import code here
