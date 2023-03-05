@@ -187,11 +187,15 @@ def extract_taxes(invoice):
         extract_WV_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "IL":
         extract_IL_taxes(invoice)
-    elif invoice.invoice_level_tax_authority == "PA" and invoice.customer.taxable and not invoice.customer.customer_pays_vape_tax:
+    elif (
+        invoice.invoice_level_tax_authority == "PA"
+        and invoice.customer.taxable
+        and not invoice.customer.customer_pays_vape_tax
+    ):
         extract_PA_taxes(invoice)
         #### IF THE LOGIC ON LINE 187 FAILS, WE STILL NEED TO ASSIGN TOTAL_SALES AND TAXES_AMOUNT!!
     else:
         for line in invoice.line_items.select_related("item").all():
             line.total_sales = line.item_total
             line.taxes_amount = 0.00
-        line.item.save()
+            line.save()
