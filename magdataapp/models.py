@@ -5,6 +5,7 @@ from django_extensions.db.models import TimeStampedModel
 ## Model for Customer #######################################################################################
 #############################################################################################################
 
+
 class Customer(TimeStampedModel):
     created_time = models.DateTimeField(editable=False)
     customer = models.PositiveBigIntegerField()  ## the contact ID from Zoho
@@ -43,10 +44,11 @@ class Customer(TimeStampedModel):
 ## Model for Items ##########################################################################################
 #############################################################################################################
 
+
 class Item(TimeStampedModel):
     product = models.PositiveBigIntegerField()  ## id field from zoho
     sku = models.CharField(max_length=30, unique=True)
-    item_name = models.CharField(max_length = 100)
+    item_name = models.CharField(max_length=100)
     purchase_price = models.DecimalField(decimal_places=2, max_digits=7)
     preferred_vendor = models.CharField(
         max_length=30
@@ -59,7 +61,7 @@ class Item(TimeStampedModel):
     reporting_category_primary = models.CharField(max_length=30)  ##choices
     reporting_category_cannabinoid = models.CharField(max_length=30)  ##choices
     cloud8_b2c = models.BooleanField()
-    b2c_msrp = models.DecimalField(decimal_places=2, max_digits=7, null = True)
+    b2c_msrp = models.DecimalField(decimal_places=2, max_digits=7, null=True)
     retail_units_in_wholesale = models.PositiveSmallIntegerField()
     OH_otp_tax = models.DecimalField(
         decimal_places=2, max_digits=7, blank=True, null=True
@@ -72,23 +74,24 @@ class Item(TimeStampedModel):
     )
 
 
-
 #############################################################################################################
 ## Model for Invoices  ######################################################################################
 #############################################################################################################
+
 
 class Invoice(TimeStampedModel):
     invoice = models.PositiveBigIntegerField()
     customer = models.ForeignKey("Customer", on_delete=models.PROTECT)
     invoice_number = models.CharField(max_length=30)
-    invoice_level_tax_authority = models.CharField(max_length=30)  
+    invoice_level_tax_authority = models.CharField(max_length=30)
     invoice_date = models.DateField()
-    invoice_status = models.CharField(max_length=30)  
+    invoice_status = models.CharField(max_length=30)
 
 
 #############################################################################################################
 ## Model for Invoice Line Items  ############################################################################
 #############################################################################################################
+
 
 class Invoice_Line_Item(TimeStampedModel):
     invoice = models.ForeignKey(
@@ -105,5 +108,3 @@ class Invoice_Line_Item(TimeStampedModel):
     total_sales = models.DecimalField(
         decimal_places=2, max_digits=7, default=0.00
     )  ##add to other decimal fields for testing purposes
-
-
