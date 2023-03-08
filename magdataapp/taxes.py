@@ -25,7 +25,9 @@ def extract_IN_taxes(invoice):
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - price * qty * Decimal(0.15)
                 line.taxes_amount = price * qty * Decimal(0.15)
-
+        else:
+            line.total_sales = total
+            line.taxes_amount = 0.00
         line.save()
 
 
@@ -46,9 +48,14 @@ def extract_KY_taxes(invoice):
             line.taxes_amount = Decimal(1.50) * units * qty
         elif category == "Cloud 8":
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
-                line.total_sales = total * Decimal(1.50) * units
-                line.taxes_amount = Decimal(1.50) * units
-
+                line.total_sales = total - (Decimal(1.50) * units * qty)
+                line.taxes_amount = Decimal(1.50) * units * qty
+            else:
+                line.total_sales = total
+                line.taxes_amount = 0.00
+        else:
+            line.total_sales = total
+            line.taxes_amount = 0.00
         line.save()
 
 
@@ -69,7 +76,9 @@ def extract_OH_taxes(invoice):
         elif category == "Vape Juice":
             line.total_sales = total - (mls * qty * Decimal(0.10))
             line.taxes_amount = mls * qty * Decimal(0.10)
-
+        else:
+            line.total_sales = total
+            line.taxes_amount = 0.00
         line.save()
 
 
@@ -94,7 +103,12 @@ def extract_WV_taxes(invoice):
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - Decimal(mls * qty * 0.075)
                 line.taxes_amount = mls * qty * 0.075
-
+            else:
+                line.total_sales = total
+                line.taxes_amount = 0.00
+        else:
+            line.total_sales = total
+            line.taxes_amount = 0.00
         line.save()
 
 
@@ -142,7 +156,9 @@ def extract_IL_taxes(invoice):
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - (price * qty * Decimal(0.15))
                 line.taxes_amount = price * qty * Decimal(0.15)
-
+        else:
+            line.total_sales = total
+            line.taxes_amount = 0.00
         line.save()
 
 
@@ -154,7 +170,9 @@ def extract_PA_taxes(invoice):
         if line.item.PA_otp_tax:
             line.total_sales = total - line.item.PA_otp_tax * qty
             line.taxes_amount = line.item.PA_otp_tax * qty
-
+        else:
+            line.total_sales = total
+            line.taxes_amount = 0.00
         line.save()
 
 
@@ -169,16 +187,15 @@ def extract_taxes(invoice):
         extract_WV_taxes(invoice)
     elif invoice.invoice_level_tax_authority == "IL":
         extract_IL_taxes(invoice)
-    # elif invoice.invoice_level_tax_authority == "NJ":
-    # extract_NJ_taxes(invoice)
     elif (
         invoice.invoice_level_tax_authority == "PA"
         and invoice.customer.taxable
         and not invoice.customer.customer_pays_vape_tax
     ):
         extract_PA_taxes(invoice)
+        #### IF THE LOGIC ON LINE 187 FAILS, WE STILL NEED TO ASSIGN TOTAL_SALES AND TAXES_AMOUNT!!
     else:
         for line in invoice.line_items.select_related("item").all():
-            line.item.total_sales = line.item_total
-            line.item.taxes_amount = 0.00
-        line.item.save()
+            line.total_sales = line.item_total
+            line.taxes_amount = 0.00
+            line.save()
