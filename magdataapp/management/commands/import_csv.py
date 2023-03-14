@@ -234,9 +234,14 @@ def cli(file_type, filename):
                 total_sales = 0.00 ## this won't be on the csv... it's set by the calculate taxes function in taxes.py
 
                 line_item = get_or_create_line_item(
-
+                    invoice = this_invoice,
+                    item = this_item,
+                    quantity = quantity,
+                    item_price = item_price,
+                    item_total = item_total,
+                    taxes_amount = taxes_amount,
+                    total_sales = total_sales,
                 )
                 
 
-                # Handle line item info here
-                # line_item = get_or_create_line_item(item=item, invoice=invoice)
+ 
