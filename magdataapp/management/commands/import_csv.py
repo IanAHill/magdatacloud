@@ -4,7 +4,6 @@ import csv
 
 from magdataapp.models import *
 
-
 def get_or_create_customer(**kwargs):
     # Normal example
     # try:
@@ -17,17 +16,17 @@ def get_or_create_customer(**kwargs):
         customer=kwargs["customer"],
         defaults={
             "created_time": kwargs.get("created_time", timezone.now()),
-            "customer_name": kwargs.get("customer_name", "Uknown"),
+            "customer_name": kwargs.get("customer_name", "Unknown"),
             "customer_sub_type": kwargs.get("customer_sub_type", "BUSINESS"),
-            "shipping_address": kwargs.get("shipping_address", "Uknown"),
-            "shipping_city": kwargs.get("shipping_city", "Uknown"),
-            "shipping_state": kwargs.get("shipping_state", "Uknown"),
+            "shipping_address": kwargs.get("shipping_address", "Unknown"),
+            "shipping_city": kwargs.get("shipping_city", "Unknown"),
+            "shipping_state": kwargs.get("shipping_state", "Unknown"),
             "shipping_code": kwargs.get("shipping_code", 0),
-            "assigned_sales_person": kwargs.get("assigned_sales_person", "Uknown"),
-            "state_manager": kwargs.get("state_manager", "Uknown"),
-            "business_ein": kwargs.get("business_ein", "Uknown"),
-            "tobacco_license": kwargs.get("tobacco_license", "Uknown"),
-            "parent_chain": kwargs.get("parent_chain", "Uknown"),
+            "assigned_sales_person": kwargs.get("assigned_sales_person", "Unknown"),
+            "state_manager": kwargs.get("state_manager", "Unknown"),
+            "business_ein": kwargs.get("business_ein", "Unknown"),
+            "tobacco_license": kwargs.get("tobacco_license", "Unknown"),
+            "parent_chain": kwargs.get("parent_chain", "Unknown"),
         },
     )
 
@@ -37,6 +36,37 @@ def get_or_create_customer(**kwargs):
         pass
 
     return customer
+
+
+def get_or_create_item(**kwargs):
+    item, created = Item.objects.get_or_create(
+        product = kwargs["product"],
+        defaults = {
+            "sku": kwargs.get("sku", "Unknown"),
+            "item_name": kwargs.get("item_name", "Unknown"),
+            "purchase_price": kwargs.get("purchase_price", 0.00),
+            "preferred_vendor": kwargs.get("preferred_vendor", "Unknown"),
+            "stock_on_hand": kwargs.get("stock_on_hand", 0),
+            "category_name": kwargs.get("category_name", "Unknown"),
+            "e_liquid_ml": kwargs.get("e_liquid_ml", 0.00),
+            "msrp": kwargs.get("msrp", 0.00),
+            "reporting_sub_category": kwargs.get("reporting_sub_category", "Unknown"),
+            "reporting_category_primary": kwargs.get("reporting_category_primary", "Unknown"),
+            "reporting_category_cannabinoid": kwargs.get("reporting_category_cannabinoid", "Unknown"),
+            "cloud8_b2c": kwargs.get("cloud8_b2c", False),
+            "b2c_msrp": kwargs.get("b2c_msrp", 0.00),
+            "retail_units_in_wholesale": kwargs.get("retail_units_in_wholesale", 0),
+            "OH_otp_tax": kwargs.get("OH_otp_tax", 0.00),
+            "PA_otp_tax": kwargs.get("PA_otp_tax", 0.00),
+            "WV_otp_tax": kwargs.get("WV_otp_tax", 0.00),
+        },
+    )
+    if not created:
+        # Update fields here
+        pass
+
+    return item
+
 
 
 def get_or_create_invoice(**kwargs):
@@ -117,10 +147,50 @@ def cli(file_type, filename):
                     customer_pays_vape_tax = customer_pays_vape_tax,
                 )
 
+
+
             if file_type == "ITEMS":
-                # Handle item info here to pass to line item
-                # item = get_or_create_item(....)
-                pass
+                product = row[0] #unique Zoho ID/Primary Key
+                sku = row[1]
+                item_name = row[2]
+                purchase_price = row[3]
+                preferred_vendor = row[4]
+                stock_on_hand = row[5]
+                category_name = row[6]
+                e_liquid_ml = row[7]
+                msrp = row[8]
+                reporting_sub_category = row[9]
+                reporting_category_primary = row[10]
+                reporting_category_cannabinoid = row[11]
+                cloud8_b2c = row[12]
+                b2c_msrp = row[13]
+                retail_units_in_wholesale = row[14]
+                OH_otp_tax = row[15]
+                PA_otp_tax = row[16]
+                WV_otp_tax = row[17]
+
+                item = get_or_create_item(
+                    product = product,
+                    sku = sku,
+                    item_name = item_name,
+                    purchase_price = purchase_price,
+                    preferred_vendor = preferred_vendor,
+                    stock_on_hand = stock_on_hand,
+                    category_name = category_name,
+                    e_liquid_ml = e_liquid_ml,
+                    msrp = msrp,
+                    reporting_sub_category = reporting_sub_category,
+                    reporting_category_primary = reporting_category_primary,
+                    reporting_category_cannabinoid = reporting_category_cannabinoid,
+                    cloud8_b2c = cloud8_b2c,
+                    b2c_msrp = b2c_msrp,
+                    retail_units_in_wholesale = retail_units_in_wholesale,
+                    OH_otp_tax = OH_otp_tax,
+                    PA_otp_tax = PA_otp_tax,
+                    WV_otp_tax = WV_otp_tax,
+                )
+
+        
 
             if file_type == "INVOICES":
                 # Make invoice
