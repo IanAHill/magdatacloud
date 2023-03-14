@@ -40,7 +40,6 @@ def get_or_create_customer(**kwargs):
 
 
 def get_or_create_invoice(**kwargs):
-    # Easier helper way
     invoice, created = Invoice.objects.get_or_create(
         invoice_number=kwargs["invoice_number"],
         customer=kwargs["customer"],
@@ -76,15 +75,46 @@ def cli(file_type, filename):
                 continue
 
             if file_type == "CUSTOMERS":
-                invoice_date = row[0]
-                invoice_number = row[1]
+                #assign csv contents to variables to pass to the get_or_create_customer function. One csv line == 1 customer
+                created_time = row[0]
+                customer = row[1] ##the unique Zoho ID/Primary Key
                 customer_name = row[2]
+                customer_sub_type = row[3] #make sure default is set to business (in models, or kwargs?)
+                taxable = row[4]
+                customer_name = row[5]
+                shipping_address = row[6]
+                shipping_address_line_2 = row[7]
+                shipping_city = row[8]
+                shipping_state = row[9]
+                shipping_code = row[10]
+                assigned_sales_person = row[11]
+                state_manager = row[12]
+                business_ein = row[13]
+                tobacco_license = row[14]
+                parent_chain = row[15]
+                customer_type = row[16]
+                customer_pays_vape_tax = row[17]
 
                 # Make customer
                 customer = get_or_create_customer(
-                    customer=i,  # Using the row position for now, change to zoho ID
+                    created_time = created_time,
+                    customer = customer,  
                     customer_name=customer_name,
-                    # Add the rest of the kwargs here for the customer
+                    customer_sub_type = customer_sub_type,
+                    taxable = taxable,
+                    customer_name = customer_name,
+                    shipping_address = shipping_address,
+                    shipping_address_line_2 = shipping_address_line_2,
+                    shipping_city = shipping_city,
+                    shipping_state = shipping_state,
+                    shipping_code = shipping_code,
+                    assigned_sales_person = assigned_sales_person,
+                    state_manager = state_manager,
+                    business_ein = business_ein,
+                    tobacco_license = tobacco_license,
+                    parent_chain = parent_chain,
+                    customer_type = customer_type,
+                    customer_pays_vape_tax = customer_pays_vape_tax,
                 )
 
             if file_type == "ITEMS":
