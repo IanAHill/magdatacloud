@@ -71,19 +71,34 @@ def get_or_create_item(**kwargs):
 
 def get_or_create_invoice(**kwargs):
     invoice, created = Invoice.objects.get_or_create(
-        invoice_number=kwargs["invoice_number"],
+        invoice=kwargs["invoice"],
         customer=kwargs["customer"],
         defaults={
-            "invoice": kwargs.get("invoice", 0),  # Bad default here
-            "invoice_level_tax_authority": kwargs.get(
-                "invoice_level_tax_authority", "Uknown"
-            ),
+            "invoice_number": kwargs.get("invoice_number", "INV-Unknown"),  
+            "invoice_level_tax_authority": kwargs.get("invoice_level_tax_authority", "Uknown"),
             "invoice_date": kwargs.get("invoice_date", timezone.now()),
             "invoice_status": kwargs.get("invoice_status", "Uknown"),
         },
     )
 
     return invoice
+
+
+def get_or_create_line_item(**kwargs):
+    line_item, created = Invoice_Line_Item.objects.get_or_create(
+        invoice = kwargs["invoice"],
+        item = kwargs["item"],
+        defaults = {
+            "quantity": kwargs.get("quantity", 0),
+            "item_price": kwargs.get("item_price", 0.00),
+            "item_total": kwargs.get("item_total", 0.00),
+            "taxes_amount": kwargs.get("taxes_amount", 0.00),
+            "total_sales": kwargs.get("total_sales", 0.00),
+        },
+    )
+
+    return line_item
+
 
 
 @click.command()
@@ -193,19 +208,35 @@ def cli(file_type, filename):
         
 
             if file_type == "INVOICES":
-                # Make invoice
-                # `customer` here either needs to be the FK primary key in OUR database
-                # or you need to retrieve it first by the data you have in the Invoice CSV file
-                # If you're given the zoho ID do:
-                # this_customer = Customer.objects.get(customer=zoho_id)
+                invoice_date = row[0]
+                invoice = row[1]
+                invoice_number = row[2]
+                customer = row[3] #Unique Zoho ID/ Primary Key
+                this_customer = Customer.objects.get(customer=customer)
+                invoice_status = row[4]
 
+                ##do NOT want to make a new invoice for every row in csv... one invoice has multiple line item rows
                 invoice = get_or_create_invoice(
-                    customer=this_customer,  # from above
+                    customer=this_customer,  
                     invoice_number=invoice_number,
-                    # rest of invoice kwargs here
+                    invoice_date = invoice_date,
+                    invoice = invoice,
+                    invoice_status = invoice_status,
                 )
 
-                # Get item here from invoice row data to pass to creating line items
+                item = row[5]
+                this_item = Item.objects.get(item=item)
+                this_invoice = Invoice.objects.get(invoice=invoice) #referencing line 200
+                quantity = row[5]
+                item_price = row[6]
+                item_total = row[7]
+                taxes_amount = 0.00 ## this won't be on the csv... it's set by the calculate taxes function in taxes.py
+                total_sales = 0.00 ## this won't be on the csv... it's set by the calculate taxes function in taxes.py
+
+                line_item = get_or_create_line_item(
+
+                )
+                
 
                 # Handle line item info here
                 # line_item = get_or_create_line_item(item=item, invoice=invoice)
