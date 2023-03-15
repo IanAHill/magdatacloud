@@ -19,7 +19,7 @@ class Customer(TimeStampedModel):
     taxable = models.BooleanField(default=True)
     customer_name = models.CharField(max_length=30)
     shipping_address = models.CharField(max_length=30)
-    shipping_address_line_2 = models.CharField(max_length=30, null=True)
+    shipping_address_line_2 = models.CharField(max_length=30, null=True, blank=True)
     shipping_city = models.CharField(max_length=30)
     shipping_state = models.CharField(max_length=30)
     shipping_code = models.PositiveSmallIntegerField()
@@ -38,6 +38,9 @@ class Customer(TimeStampedModel):
         max_length=30, choices=CUSTOMER_TYPE_CHOICES, null=True, default=""
     )
     customer_pays_vape_tax = models.BooleanField(null=True)
+
+    def __str__(self):
+        return self.customer_name
 
 
 #############################################################################################################
@@ -73,6 +76,9 @@ class Item(TimeStampedModel):
         decimal_places=2, max_digits=7, blank=True, null=True
     )
 
+    def __str__(self):
+        return self.item_name
+
 
 #############################################################################################################
 ## Model for Invoices  ######################################################################################
@@ -86,6 +92,9 @@ class Invoice(TimeStampedModel):
     invoice_level_tax_authority = models.CharField(max_length=30)
     invoice_date = models.DateField()
     invoice_status = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f"Invoice #{self.invoice_number}"
 
 
 #############################################################################################################
