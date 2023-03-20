@@ -207,7 +207,7 @@ def cli(file_type, filename):
 
             if file_type == "INVOICES":
                 invoice_date = row[0]
-                invoice = row[1]
+                invoice_id = row[1]
                 invoice_number = row[2]
                 customer = row[3] #Unique Zoho ID/ Primary Key
                 this_customer = Customer.objects.get(customer=customer)
@@ -218,16 +218,16 @@ def cli(file_type, filename):
                     customer=this_customer,  
                     invoice_number=invoice_number,
                     invoice_date = invoice_date,
-                    invoice = invoice,
+                    invoice = invoice_id,
                     invoice_status = invoice_status,
                 )
 
-                item = row[5]
-                this_item = Item.objects.get(item=item)
-                this_invoice = Invoice.objects.get(invoice=invoice) #referencing line 200
-                quantity = row[5]
-                item_price = row[6]
-                item_total = row[7]
+                product = row[5]
+                this_item = Item.objects.get(product=product)
+                this_invoice = Invoice.objects.get(invoice=invoice_id) 
+                quantity = row[6]
+                item_price = row[7]
+                item_total = row[8]
                 taxes_amount = 0.00 ## this won't be on the csv... it's set by the calculate taxes function in taxes.py
                 total_sales = 0.00 ## this won't be on the csv... it's set by the calculate taxes function in taxes.py
 
@@ -240,6 +240,7 @@ def cli(file_type, filename):
                     taxes_amount = taxes_amount,
                     total_sales = total_sales,
                 )
+
                 
 
  
