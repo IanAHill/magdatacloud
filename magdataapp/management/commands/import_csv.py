@@ -123,7 +123,6 @@ def cli(file_type, filename):
                 #assign csv contents to variables to pass to the get_or_create_customer function. One csv line == 1 customer
                 created_time = row[0]
                 customer = row[1] ##the unique Zoho ID/Primary Key
-                customer_name = row[2]
                 customer_sub_type = row[3] #make sure default is set to business (in models, or kwargs?)
                 taxable = row[4]
                 customer_name = row[5]
@@ -144,7 +143,6 @@ def cli(file_type, filename):
                 customer = get_or_create_customer(
                     created_time = created_time,
                     customer = customer,  
-                    customer_name=customer_name,
                     customer_sub_type = customer_sub_type,
                     taxable = taxable,
                     customer_name = customer_name,

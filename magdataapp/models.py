@@ -27,7 +27,7 @@ class Customer(TimeStampedModel):
     state_manager = models.CharField(max_length=30)
     business_ein = models.CharField(max_length=30)
     tobacco_license = models.CharField(max_length=30)
-    parent_chain = models.CharField(max_length=30)
+    parent_chain = models.CharField(max_length=30, null=True, blank=True)
     CUSTOMER_TYPE_CHOICES = [
         ("CHAIN", "Chain"),
         ("CONSUMER", "Consumer"),
