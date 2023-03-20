@@ -1,5 +1,6 @@
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from django.utils import timezone
 
 #############################################################################################################
 ## Model for Customer #######################################################################################
@@ -7,7 +8,7 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class Customer(TimeStampedModel):
-    created_time = models.DateTimeField(editable=False)
+    created_time = models.DateTimeField(editable=False, default=timezone.now())
     customer = models.PositiveBigIntegerField()  ## the contact ID from Zoho
     TYPE_CHOICES = [
         ("BUSINESS", "Business"),

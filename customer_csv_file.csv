@@ -1,0 +1,4 @@
+﻿created time,customer ID,customer subtype,taxable,customer_name,shipping_address,shipping address line 2,shipping city,shipping state,shipping code,assigned sales person,state manager,businesss EIN,tobacco liense,parent chain,customer type,customer pays vape tax?
+2023-03-19,1254566,Business,TRUE,Gumbys,123 Main Street,,State College,PA ,16801,Zach B.,Justin R.,444558-44585,445555-ddfrB,,Distributor,TRUE
+2023-03-19,4456454,Business,TRUE,Klafters Inc.,446 Blueberry Lane,,Boston,MA,14568,Derek,Brian,4564541111,33466BBX-39,Klafters,Chain,TRUE
+2023-03-19,1518913,Business,TRUE,CstoreMaster,458 Lincoln Ave,,Bellefonte,PA ,46486,Zach B.,Justin R.,3478768746,7784758,Cstore,Chain,TRUE
