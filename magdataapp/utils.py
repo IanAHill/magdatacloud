@@ -16,7 +16,7 @@ def get_plot(x, y):
     plt.switch_backend("AGG")
     plt.figure(figsize=(10,5))
     plt.title("Total Sales")
-    plt.plot(x,y)
+    plt.bar(x,y)
     plt.xlabel("item")
     plt.ylabel("total sales")
     graph = get_graph()

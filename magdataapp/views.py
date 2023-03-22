@@ -9,3 +9,6 @@ def home(request):
     y = [y.item_total for y in qs]
     chart = get_plot(x, y)
     return render(request, "home.html", {'chart': chart})
+
+def customers(request):
+    return render(request, "customers.html", {})
