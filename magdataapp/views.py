@@ -15,6 +15,18 @@ def home(request):
     x = [x.item.item_name for x in qs]
     y = [y.item_total for y in qs]
     chart = get_plot(x, y)
+
+    # Pseudocode 
+    # categories = ["Cat1", "Cat2", "Cat3", "Cat4", "Cat5"]
+    # aggregations = []
+    # for category in categories:
+    #     qs = Invoice_Line_Items.objects.filter(category=category)
+    #     total = 0
+    #     for line_item in qs:
+    #         total += line_item.item_total
+    #     aggregations.append(total) 
+    #
+    # chartdatajson = json.dumps(aggregations)
     return render(
         request,
         "home.html",
