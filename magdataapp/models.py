@@ -113,7 +113,7 @@ class Invoice_Line_Item(TimeStampedModel):
 
     quantity = models.PositiveIntegerField()
     item_price = models.DecimalField(decimal_places=2, max_digits=7)
-    item_total = models.DecimalField(decimal_places=2, max_digits=7)
+    item_total = models.FloatField()
     taxes_amount = models.DecimalField(decimal_places=2, max_digits=7)
     total_sales = models.DecimalField(
         decimal_places=2, max_digits=7, default=0.00

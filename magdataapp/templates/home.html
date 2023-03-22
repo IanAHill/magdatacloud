@@ -2,34 +2,35 @@
 {% load static %}
 
 {% block content %}
-    {% if chart %}
-        <img src="data:image/png;base64, {{chart|safe}}">
-    {% endif %}
 
-    <canvas id="example"></canvas>
+   <div id="chart-wrapper"> <canvas id="chart"></canvas></div>
 {% endblock content %}
+
+
 
 {% block footer_js %}
     <script>
-        const ctx = document.getElementById('example');
+        const ctx = document.getElementById('chart');
         const dataPoints = {{ chartdatajson }};
-
+        console.log(dataPoints)
         new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: ['Disposable Vapes', 'Cloud 8', 'Vape Juice', 'Rolling Tobacco'],
             datasets: [{
-              label: '# of Votes',
+              label: 'Total Sales by Category',
               data: dataPoints,
               borderWidth: 1
             }]
           },
           options: {
+            responsive: true,
             scales: {
               y: {
                 beginAtZero: true
               }
             }
+            
           }
         });
       </script>

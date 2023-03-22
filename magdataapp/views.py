@@ -16,23 +16,24 @@ def home(request):
     y = [y.item_total for y in qs]
     chart = get_plot(x, y)
 
-    # Pseudocode 
-    # categories = ["Cat1", "Cat2", "Cat3", "Cat4", "Cat5"]
-    # aggregations = []
-    # for category in categories:
-    #     qs = Invoice_Line_Items.objects.filter(category=category)
-    #     total = 0
-    #     for line_item in qs:
-    #         total += line_item.item_total
-    #     aggregations.append(total) 
-    #
-    # chartdatajson = json.dumps(aggregations)
+    # CHARTJS CHART
+    categories = ["Disposable vapes", "Cloud 8", "Vape Juice", "Rolling Tobacco"]
+    aggregations = []
+    for category in categories:
+        qs = Invoice_Line_Item.objects.filter(item__category_name = category) 
+        total = 0
+        for line_item in qs:
+            total += line_item.item_total
+        aggregations.append(total)
+
+    
+    
     return render(
         request,
         "home.html",
         {
             "chart": chart,
-            "chartdatajson": json.dumps([12, 11, 19, 5, 2, 3]),
+            "chartdatajson": json.dumps(aggregations),
         },
     )
 
