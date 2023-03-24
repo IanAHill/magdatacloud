@@ -2,36 +2,36 @@
 {% load static %}
 
 {% block content %}
-
-   <div id="chart-wrapper"> <canvas id="chart"></canvas></div>
+<h1>Total Sales by Category<//h1>
+<div id="chart-wrapper"> <canvas id="chart"></canvas></div>
 {% endblock content %}
 
 
 
 {% block footer_js %}
-    <script>
-        const ctx = document.getElementById('chart');
-        const dataPoints = {{ chartdatajson }};
-        console.log(dataPoints)
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['Disposable Vapes', 'Cloud 8', 'Vape Juice', 'Rolling Tobacco'],
-            datasets: [{
-              label: 'Total Sales by Category',
-              data: dataPoints,
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-            
-          }
-        });
-      </script>
+<script>
+  const ctx = document.getElementById('chart');
+  const dataPoints = {{ chartdatajson }};
+  console.log(dataPoints)
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Disposable Vapes', 'THC8', 'Vape Juice', 'Rolling Tobacco'],
+      datasets: [{
+        label: 'Total Sales by Category',
+        data: dataPoints,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+
+    }
+  });
+</script>
 {% endblock footer_js %}

@@ -8,6 +8,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=McLaren&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <title>{% block title %} MAG Data Cloud {% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,7 +22,8 @@
 
 <body>
     <nav id="nav-bar">
-        <div><a href="{% url 'home' %}" class="nav-a"><img src="{% static 'images/icon.png' %}" id="logo" width="40%"></a></div>
+        <div><a href="{% url 'home' %}" class="nav-a"><img src="{% static 'images/logo.png' %}" id="logo"
+                    width="20%"></a></div>
         <ul id="nav-links">
             <li><a href="{% url 'customers' %}" class="nav-a">Customers</a></li>
             <li><a href="{% url 'customers' %}" class="nav-a">Invoices</a></li>
@@ -30,7 +37,7 @@
     </main>
 
     <footer>
-        <p>©MAG Industries - All Rights Reserved</p>
+        <p id="footer-text">©Kung Fu Vapes - All Rights Reserved</p>
     </footer>
 
     {% block footer_js %}{% endblock footer_js %}

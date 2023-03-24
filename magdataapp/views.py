@@ -17,7 +17,7 @@ def home(request):
     chart = get_plot(x, y)
 
     # CHARTJS CHART
-    categories = ["Disposable vapes", "Cloud 8", "Vape Juice", "Rolling Tobacco"]
+    categories = ["Disposable vapes", "THC8", "Vape Juice", "Rolling Tobacco"]
     aggregations = []
     for category in categories:
         qs = Invoice_Line_Item.objects.filter(item__category_name = category) 

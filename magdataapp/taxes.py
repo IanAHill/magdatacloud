@@ -21,7 +21,7 @@ def extract_IN_taxes(invoice):
         if category == "Disposable Vapes":
             line.total_sales = total - price * qty * Decimal(0.15)
             line.taxes_amount = price * qty * Decimal(0.15)
-        elif category == "Cloud 8":
+        elif category == "THC8":
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - price * qty * Decimal(0.15)
                 line.taxes_amount = price * qty * Decimal(0.15)
@@ -46,7 +46,7 @@ def extract_KY_taxes(invoice):
         elif category == "Disposable Vapes":
             line.total_sales = total - qty * Decimal(1.50) * units
             line.taxes_amount = Decimal(1.50) * units * qty
-        elif category == "Cloud 8":
+        elif category == "THC8":
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - (Decimal(1.50) * units * qty)
                 line.taxes_amount = Decimal(1.50) * units * qty
@@ -69,7 +69,7 @@ def extract_OH_taxes(invoice):
         if line.item.OH_otp_tax:
             line.total_sales = total - line.item.OH_otp_tax * qty
             line.taxes_amount = line.item.OH_otp_tax * qty
-        # Vape Tax == .10 * mls for open and closed systems, not cloud 8 products (nicotene only)
+        # Vape Tax == .10 * mls for open and closed systems, not THC8 products (nicotene only)
         if category == "Disposable Vapes":
             line.total_sales = total - (mls * qty * Decimal(0.10))
             line.taxes_amount = mls * qty * Decimal(0.10)
@@ -99,7 +99,7 @@ def extract_WV_taxes(invoice):
         elif category == "Vape Juice":
             line.total_sales = total - Decimal(mls * qty * 0.075)
             line.taxes_amount = mls * qty * 0.075
-        elif category == "Cloud 8":
+        elif category == "THC8":
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - Decimal(mls * qty * 0.075)
                 line.taxes_amount = mls * qty * 0.075
@@ -112,7 +112,7 @@ def extract_WV_taxes(invoice):
         line.save()
 
 
-## NJ not needed, because non-nicotene vapes are not subject to vape tax in NJ, and we only sell Cloud 8 there because flavored nicotene vapes are banned in NJ.
+## NJ not needed, because non-nicotene vapes are not subject to vape tax in NJ, and we only sell THC8 there because flavored nicotene vapes are banned in NJ.
 # def extract_NJ_taxes(invoice):
 #     for line in invoice.line_items.select_related("item").all():
 #         category = line.item.category_name
@@ -124,7 +124,7 @@ def extract_WV_taxes(invoice):
 #         if category == "Disposable Vapes":
 #             line.item.total_sales = total - (mls * qty * 0.10)
 #             line.item.taxes_amount = mls * qty * 0.10
-#         elif category == "Cloud 8":
+#         elif category == "THC8":
 #             matching_categories = [
 #                 "1ML Cartridge",
 #                 "1ML Disposable",
@@ -152,7 +152,7 @@ def extract_IL_taxes(invoice):
         elif category == "Vape Juice":
             line.total_sales = total - (price * qty * Decimal(0.15))
             line.taxes_amount = price * qty * Decimal(0.15)
-        elif category == "Cloud 8":
+        elif category == "THC8":
             if line.item.reporting_sub_category in MATCHING_CATEGORIES:
                 line.total_sales = total - (price * qty * Decimal(0.15))
                 line.taxes_amount = price * qty * Decimal(0.15)

@@ -45,7 +45,7 @@ def disposable_vape(db):
         category_name="Disposable Vapes",
         e_liquid_ml=130.00,
         msrp=15.99,
-        ## only Cloud 8 Products have data for reporting categories
+        ## only THC8 Products have data for reporting categories
         reporting_sub_category="",
         reporting_category_primary="",
         reporting_category_cannabinoid="",
@@ -63,11 +63,11 @@ def matching_cloud8(db):
     return Item.objects.create(
         product=123456789,
         sku="MATCHHEMP47",
-        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        item_name="THC8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
         purchase_price=20.59,
         preferred_vendor="MAG Warehouse",
         stock_on_hand=150,
-        category_name="Cloud 8",
+        category_name="THC8",
         e_liquid_ml=6.00,
         msrp=19.99,
         reporting_sub_category="1ML Cartridge",
@@ -87,11 +87,11 @@ def not_matching_cloud8(db):
     return Item.objects.create(
         product=123456789,
         sku="NOMATCHHEMP47",
-        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        item_name="THC8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
         purchase_price=20.59,
         preferred_vendor="MAG Warehouse",
         stock_on_hand=150,
-        category_name="Cloud 8",
+        category_name="THC8",
         e_liquid_ml=6.00,
         msrp=19.99,
         reporting_sub_category="DOES NOT MATCH",
@@ -157,7 +157,7 @@ def no_tax_product(db):
     return Item.objects.create(
         product=5551234,
         sku="NO TAX HEMP47",
-        item_name="Cloud 8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
+        item_name="THC8 - Delta 8 -OG Kush - 1ML Cartridge - 6CT",
         purchase_price=20.59,
         preferred_vendor="MAG Warehouse",
         stock_on_hand=150,
