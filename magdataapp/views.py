@@ -48,20 +48,12 @@ def customers(request):
         },
     )
 
-
-# This would be accessed with
-# /fake-customer/?q=frank
-def fake_customer_search(request):
-    q = request.GET.get("q", None)
-    qs = Customer.objects.all()
-
-    if q is not None:
-        customers = qs.filter(customer_name__icontains=q)
-
+def invoices(request):
+    invoices = Invoice_Line_Item.objects.all()
     return render(
         request,
-        "customers.html",
+        "invoices.html",
         {
-            "customers": customers,
+            "invoices": invoices,
         },
     )

@@ -33,3 +33,8 @@ h1 {
     font-family: 'Bangers', cursive;
     font-size: xx-large;
 }
+
+td {
+    padding-left: 50px;
+    padding-right: 50px;
+}

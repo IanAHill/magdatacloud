@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} THC8 Data Cloud - Customers {% endblock %}
+
+{% block content %}
+<table>
+    <thead>
+        <tr>
+            <th>Invoice Number</th>
+            <th>SKU</th>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Item Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in invoices %}
+        <tr>
+            <td>{{ i.invoice.invoice_number }}</td>
+            <td>{{ i.item.sku}}</td>
+            <td>{{ i.item.item_name }}</td>
+            <td>{{ i.quantity }}</td>
+            <td>{{ i.item_total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

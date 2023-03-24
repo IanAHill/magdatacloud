@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=McLaren&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <title>{% block title %} MAG Data Cloud {% endblock %}</title>
+    <title>{% block title %} THC8 Data Cloud {% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -26,7 +26,7 @@
                     width="20%"></a></div>
         <ul id="nav-links">
             <li><a href="{% url 'customers' %}" class="nav-a">Customers</a></li>
-            <li><a href="{% url 'customers' %}" class="nav-a">Invoices</a></li>
+            <li><a href="{% url 'invoices' %}" class="nav-a">Invoices</a></li>
             <li><a href="home.html" class="nav-a">Items</a></li>
         </ul>
     </nav>
