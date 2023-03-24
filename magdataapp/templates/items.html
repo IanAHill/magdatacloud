@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} THC8 Data Cloud - Customers {% endblock %}
+
+{% block content %}
+<h2>Inventory</h2>
+<table>
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Item Name</th>
+            <th>Stock on Hand</th>
+            <th>Purchase Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in items %}
+        <tr>
+            <td>{{ i.sku }}</td>
+            <td>{{ i.item_name }}</td>
+            <td>{{ i.stock_on_hand}}</td>
+            <td>{{ i.purchase_price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

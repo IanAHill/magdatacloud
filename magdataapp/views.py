@@ -48,6 +48,16 @@ def customers(request):
         },
     )
 
+def items(request):
+    items = Item.objects.all()
+    return render(
+        request,
+        "items.html",
+        {
+            "items": items,
+        },
+    )
+
 def invoices(request):
     invoices = Invoice_Line_Item.objects.all()
     return render(
