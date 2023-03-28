@@ -99,8 +99,6 @@ def get_or_create_line_item(**kwargs):
 
     return line_item
 
-
-
 @click.command()
 @click.option(
     "--file-type",

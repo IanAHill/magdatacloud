@@ -1,6 +1,6 @@
-# Project Name
+# Kung Fu Vapes Data Cloud
 > Simple full-stack analytics app for a B2B company created with Django and Chart.js.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+> Live demo [_here_](http://ianahill.pythonanywhere.com). 
 ## Table of Contents
 * [General Info](#general-information)
 * [Technologies Used](#technologies-used)
@@ -8,105 +8,94 @@
 * [Screenshots](#screenshots)
 * [Setup](#setup)
 * [Usage](#usage)
-* [Project Status](#project-status)
-* [Room for Improvement](#room-for-improvement)
+* [Future Development](#future-development)
 * [Acknowledgements](#acknowledgements)
 * [Contact](#contact)
-<!-- * [License](#license) -->
+
 
 
 ## General Information
-- Provide general information about your project here.
-- What problem does it (intend to) solve?
-- What is the purpose of your project?
-- Why did you undertake it?
-<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
+Kung Fu Vapes Data Cloud is a full-stack web application created with Django for the purposes of Data Analytics for a Business to Business distribution company. It is based on a real-world startup company that was building out its analytics department (the name and branding have been changed). It uses an SQLite database for the purposes of generating up-to-date interdepartmental dashboards that are fully automated.
+
+A typical users would be a Data Analyst who would create data visualizations or dashboards using technologies like Chart.js, Matplotlib, Plotly, or embedded Power BI or Tableau dashboards that connect to the database for automation. It would also be regularly accessed by executive management or department heads to view dashboards and reports pertinent to their department or roles. Django allows easy user authentication and user specific views to allow the Data Analyst to control who can view what data, and to provide only relevant views to each user.
+
+Rather than having to recreate reports and dashboards manually, pulling datasets each time, the Kung Fu Vapes Data Cloud allows the Analyst to focus on refining and developing further dashboards. Whether the database is updated by connecting to a third-party API or by importing CSV files, the front-end reports are automatically updated.
 
 
 ## Technologies Used
-- Tech 1 - version 1.0
-- Tech 2 - version 2.0
-- Tech 3 - version 3.0
+- Django - version 4.1.5
+- ipython - version 8.8.0
+- django-extensions - version 3.2.1
+- django-click - version 2.3.0
+- pytest - version7.2.1
+- Chart.js - version 4.0
 
 
 ## Features
-List the ready features here:
-- Awesome feature 1
-- Awesome feature 2
-- Awesome feature 3
+Some of the core functionality of this app includes:
+- Easily update the database by importing CSV files directly via the command line
+- The Django ORM makes it simple to access data through view context to aggregate data and display visuals - no Pandas required
+- The front-end is a blank canvas that analysts can use to connect any dashboard technologies of their choice to the database
+- Use Django user authentication to create custom views for each user -- have an executive dashboard when the CEO logs in, or an HR dashboard for HR, etc.
+- Data visualizations are fully automated. When the database updates, so do the dashboards!
+- Custom functions provide useful data transformations that the source doesn't. `taxes.py`, for example, automatically extracts complicated excise taxes from invoices based on state and product and stores the values in separate fields for easy tax reporting.
 
 
 ## Screenshots
-![Example screenshot](./img/screenshot.png)
-<!-- If you have screenshots you'd like to share, include them here. -->
+<figure>
+<img src="./static/images/dashboard.png" width=40%>
+<figcaption>An example sales summary aggregation by item category</figcaption>
+</figure>
+<figure>
+<img src="./static/images/table.png" width=40%>
+<figcaption>A table dynamically filled with data from the database, demonstrating basic CRUD functionality</figcaption>
+</figure>
+<figure>
+<img src="./static/images/taxes.png" width=40%>
+<figcaption>An example of a custom tax extraction data manipulation function</figcaption>
+</figure>
 
 
 ## Setup
-What are the project requirements/dependencies? Where are they listed? A requirements.txt or a Pipfile.lock file perhaps? Where is it located?
-
-Proceed to describe how to install / setup one's local environment / get started with the project.
-
-
-## Usage
-How does one go about using it?
-Provide various use cases and code examples here.
-
-`write-your-code-here`
-
-
-## Project Status
-Project is: _in progress_ / _complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.
-
-
-## Room for Improvement
-Include areas you believe need improvement / could be improved. Also add TODOs for future development.
-
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
-
-To do:
-- Feature to be added 1
-- Feature to be added 2
-
-
-## Acknowledgements
-Give credit here.
-- This project was inspired by...
-- This project was based on [this tutorial](https://www.example.com).
-- Many thanks to...
-
-
-## Contact
-Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
-
-
-<!-- Optional -->
-<!-- ## License -->
-<!-- This project is open source and available under the [... License](). -->
-
-<!-- You don't have to include all sections - just the one's relevant to your project -->
-
-
-
-
-
-
-# Kung Fu Vapes Data Cloud
-Simple full-stack analytics app for a B2B company created with Django and Chart.js
-
-
-## Installing dependencies
-
+After cloning the repository and setting up your virtual environment, you will need to install the depencies for this project. They are included in the `requirements.txt` file. Simply run the following on the command line:
 ```shell
 $ pip install -r requirements.txt
 ```
 
-## How to run import_csv
 
-You just need to call the management command we created in `import_csv.py`.  You do that by running:
 
-1. Activate virtualenv in VS Code Terminal
-2. `python manage.py import_csv --file-type=CUSTOMERS my_csv_file.csv`
+## Usage
+Once you have set up your virtual environment and installed the dependencies, you are ready to use the app! Data is easy to import using the custom ``import_csv.py`` function. Simply run the following command in the terminal:
 
-And that will call `management/commands/import_csv.py` for you..
+```shell
+$ python manage.py import_csv exampleData.csv
+```
+where exampleData.csv is the file name and path for the csv you are trying to import. Sample CSV datasets are included in this project's root folder.
+
+You will be prompted to enter Invoices, Customers, or Items, corresponding to which table in the database you are loading the data.
+
+
+
+## Future Development
+There is a lot of potential to showcase a variety of dashboards and data visualization technologies on the front-end. The immediate next step for this project is to include a variety of users to login with custom homepages displaying different dashboards for each user.
+
+Room for improvement:
+- Improve unit testing on custom functions (i.e. taxes.py)
+- Add mobile responsive design to the front end
+- Add more data visuzlizations and full dashboards with more detail
+To do:
+- Write a function to update the database with a call to a third-party API (this project is based on a company that used Zoho Inventory)
+- Custom dashboards for different users
+
+
+
+## Acknowledgements
+Many thanks to
+- Jen Kerkado at The Career Force for her empowering coaching and thorough expertise of the world of Data Science
+- RevSys and particularly Frank Wiles for his unparalleled insight and understanding of Django
+- Joe Han through the Rutgers full-stack coding bootcamp for always encouraging me to "just google" things and persevere in finding solutions
+
+
+
+## Contact
+Created by [@ianahill](https://www.ianahill.com/) - feel free to contact me!
