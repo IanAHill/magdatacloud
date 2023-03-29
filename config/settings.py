@@ -17,6 +17,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environs.Env()
 
+try:
+    env.read_env()
+except Exception as e:
+    print(e)
+    print("Unable to read .env file")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
