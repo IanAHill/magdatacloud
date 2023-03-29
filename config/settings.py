@@ -24,7 +24,7 @@ env = environs.Env()
 SECRET_KEY = env("SECRET_KEY", default="django-insecure-@=999999999999")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG", default=True)
 
 ALLOWED_HOSTS = ["ianahill.pythonanywhere.com"]
 
